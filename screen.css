@@ -1,0 +1,100 @@
+/*
+ * Copyright (c) Codiad & Andr3as, distributed
+ * as-is and without warranty under the MIT License.
+ * See http://opensource.org/licenses/MIT for more information. 
+ * This information must remain intact.
+ */
+
+/* Git status */
+.git_area table th, .git_area table td {
+    padding: 0;
+    font-weight: 100;
+}
+.git_area header input {
+    display: inline;
+}
+.git_area #check_all {
+	margin-left: 5px;
+}
+.git_area > div {
+    max-height: 50vh;
+    overflow-y: scroll;
+}
+.git_list td {
+    padding-left: 5px;
+}
+.git_area .col_1 {
+    width: 30px;
+}
+.git_area .col_2 {
+    width: 70px;
+}
+.git_area .col_3 {
+    width: 400px;
+}
+.git_area .col_4 {
+    width: 160px;
+}
+.git_area input[type="checkbox"] {
+    margin: auto;
+}
+.git_button {
+	border-radius: 3px;
+    font-size: 12px;
+    line-height: 1em;
+    padding: 5px;
+    margin: 2px 0;
+}
+.git_area .right {
+    position: relative;
+    left: 5px;
+    top: 15px;
+}
+.git_area .modified, .git_area .untracked {
+	color: red;
+}
+.git_area .added {
+	color: green;
+}
+
+/* Git log */
+.git_log_area .git_log {
+	max-height: 55vh;
+	max-width: 60vw;
+	overflow: auto;
+}
+.git_log_area .git_log .commit_hash {
+    color: yellow;
+}
+
+/* Git diff */
+.git_diff {
+    max-height: 40vh;
+    max-width: 800px;
+    overflow: auto;
+}
+.git_diff .plus {
+    color: green;
+}
+.git_diff .minus {
+    color: red;
+}
+
+/* Git remotes */
+/* Git branches */
+#git_remotes, #git_branches {
+    display: inline;
+    margin-left: 10px;
+    width: 400px;
+}
+
+/* Git clone */
+.git_clone_area table td, .git_clone_area table th {
+    border: none;
+}
+
+/* Git pull/push */
+.git_push_area table td, .git_push_area table th {
+    border: none;
+    padding: 0;
+}

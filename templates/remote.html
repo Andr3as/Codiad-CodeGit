@@ -1,0 +1,15 @@
+<div class="git_remote_area">
+    <div class="content">
+        <label>Remote</label>
+        Current remotes: <select id="git_remotes"></select>
+        <div class="git_remote_info"></div>
+    </div>
+    <footer>
+		<button onclick="codiad.CodeGit.showDialog('overview', codiad.CodeGit.location); return false;">Close</button>
+		<button onclick="codiad.CodeGit.removeRemote(); return false;">Remove</button>
+		<button onclick="codiad.CodeGit.showDialog('newRemote', codiad.CodeGit.location); return false;">New</button>
+    </footer>
+    <script>
+        codiad.CodeGit.getRemotes();
+    </script>
+</div>

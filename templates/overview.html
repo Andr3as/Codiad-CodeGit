@@ -1,0 +1,30 @@
+<div class="git_area">
+    <label>Status</label>
+    <header>
+		<input type="checkbox" id="check_all">
+		<button onclick="codiad.CodeGit.status(); return false;"><i class="icon-arrows-ccw"></i></button>
+		<button onclick="codiad.CodeGit.showCommitDialog(); return false;">Commit</button>
+		<button onclick="codiad.CodeGit.showDialog('branches', codiad.CodeGit.location); return false;">Branches</button>
+		<button onclick="codiad.CodeGit.showDialog('remote', codiad.CodeGit.location); return false;">Remotes</button>
+		<button onclick="codiad.CodeGit.showDialog('log', codiad.CodeGit.location); return false;">Log</button>
+		<button onclick="codiad.CodeGit.showDialog('push', codiad.CodeGit.location); return false;">Pull/Push</button>
+		<div class="right">
+            <i class="icon-flow-branch"></i>Branch: <span class="branch">master</span>
+		</div>
+    </header>
+    <div>
+        <table class="git_list">
+			<thead>
+				<td class="col_1"></td><td class="col_2"></td><td class="col_3"></td><td class="col_4"></td>
+			</thead>
+			<tbody></tbody>
+        </table>
+    </div>
+    <footer>
+        <button onclick="codiad.modal.unload(); return false;">Close</button>
+        <button onclick="codiad.CodeGit.showDialog('settings', codiad.CodeGit.location); return false;">Settings</button>
+    </footer>
+    <script>
+        codiad.CodeGit.status();
+    </script>
+</div>
