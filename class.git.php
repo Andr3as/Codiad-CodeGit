@@ -101,8 +101,8 @@
                 return false;
             }
             foreach($this->resultArray as $index => $line) {
-				$line = str_replace ("\t", "    ", $line);
-				$this->resultArray[$index] = htmlentities($line);
+                $line = str_replace ("\t", "    ", $line);
+                $this->resultArray[$index] = htmlentities($line);
             }
             return $this->resultArray;
         }
@@ -119,16 +119,16 @@
         }
         
         public function getRemotes($path) {
-			if (!is_dir($path)) return false;
-			chdir($path);
-			$result = $this->executeCommand("git remote");
-			if ($result !== 0) return false;
-			$buffer = array();
-			foreach ($this->resultArray as $remote) {
-				$result = $this->executeCommand("git remote show -n " . $remote);
-				$buffer[$remote] = $this->result;
-			}
-			return $buffer;
+            if (!is_dir($path)) return false;
+            chdir($path);
+            $result = $this->executeCommand("git remote");
+            if ($result !== 0) return false;
+            $buffer = array();
+            foreach ($this->resultArray as $remote) {
+                $result = $this->executeCommand("git remote show -n " . $remote);
+                $buffer[$remote] = $this->result;
+            }
+            return $buffer;
         }
         
         public function newRemote($path, $name, $url) {
@@ -158,14 +158,14 @@
             chdir($path);
             $result = $this->executeCommand("git branch");
             $current = "";
-			foreach($this->resultArray as $index => $line) {
-				$array[$index] = trim($line);
-				if (strpos($line, "* ") === 0) {
-					$current = substr($line, 2);
-					$array[$index] = $current;
-				}
-			}
-			return array("branches" => $array, "current" => $current);
+            foreach($this->resultArray as $index => $line) {
+                $array[$index] = trim($line);
+                if (strpos($line, "* ") === 0) {
+                    $current = substr($line, 2);
+                    $array[$index] = $current;
+                }
+            }
+            return array("branches" => $array, "current" => $current);
         }
         
         public function newBranch($path, $name) {
@@ -381,26 +381,26 @@
         }
         
         private function untrackedDiff($path) {
-			$result = array();
-			if (is_dir($path)) {
-				foreach(scandir($path) as $file) {
-					if ($file == '.' || $file == '..') {
-						continue;
-					}
-					$res = $this->untrackedDiff($path . $file);
-					foreach($res as $line) {
-						array_push($result, $line);
-					}
-				}
-			} else {
-				$this->executeCommand('cat ' . $path);
-				array_push($result, "+++ ". $path);
-				foreach($this->resultArray as $index => $line) {
-					array_push($result, "+" . $line);
-				}
-				array_push($result, "\n");
-			}
-			return $result;
+            $result = array();
+            if (is_dir($path)) {
+                foreach(scandir($path) as $file) {
+                    if ($file == '.' || $file == '..') {
+                        continue;
+                    }
+                    $res = $this->untrackedDiff($path . $file);
+                    foreach($res as $line) {
+                        array_push($result, $line);
+                    }
+                }
+            } else {
+                $this->executeCommand('cat ' . $path);
+                array_push($result, "+++ ". $path);
+                foreach($this->resultArray as $index => $line) {
+                    array_push($result, "+" . $line);
+                }
+                array_push($result, "\n");
+            }
+            return $result;
         }
     }
 ?>

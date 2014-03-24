@@ -5,212 +5,212 @@
  * See http://opensource.org/licenses/MIT for more information.
  * This information must remain intact.
  */
-	//error_reporting(0);
+    //error_reporting(0);
 
-	require_once('../../common.php');
-	require_once('class.git.php');
-	
-	checkSession();
-	
-	if ($_GET['action'] != 'hasRepo') {
-		$git = new Git();
-		define('CONFIG', 'git.' . $_SESSION['user'] . '.php');
-	}
-	
-	switch($_GET['action']) {
-		
-		case 'hasRepo':
-			if (isset($_GET['path'])) {
-				if (file_exists($_GET['path'] . '/.git')) {
-					echo '{"status": true,"message":"Repo exists"}';
-				} else {
-					echo '{"status": false,"message":"Repo doesn\' exits"}';
-				}
-			} else {
-				echo '{"status":"error","message":"Missing parameter!"}';
-			}
-			break;
-		
-		case 'init':
-			if (isset($_GET['path'])) {
-				if ($git->init(getWorkspacePath($_GET['path']))) {
-					echo '{"status":"success","message":"Initialized empty Git repository!"}';
-				} else {
-					echo '{"status":"error","message":"' . $git->result . '!"}';
-				}
-			} else {
-				echo '{"status":"error","message":"Missing parameter!"}';
-			}
-			break;
-			
-		case 'clone':
-			if (isset($_GET['path']) && isset($_GET['repo'])) {
-				echo $git->cloneRepo(getWorkspacePath($_GET['path']), $_GET['repo']);
-			} else {
-				echo '{"status":"error","message":"Missing parameter!"}';
-			}
-			break;
-			
-		case 'status':
-			if (isset($_GET['path'])) {
-				$result = $git->status(getWorkspacePath($_GET['path']));
-				if ($result === false) {
-					echo '{"status":"error","message":"Failed to get status!"}';
-				} else {
-					echo '{"status":"success","data":'. json_encode($result) .'}';
-				}
-			} else {
-				echo '{"status":"error","message":"Missing parameter!"}';
-			}
-			break;
-		   
-		case 'add':
-			if (isset($_GET['path']) && isset($_POST['files'])) {
-				$files = json_decode($_POST['files']);
-				$result = true;
-				foreach($files as $file) {
-					$result = !(!$result | !$git->add(getWorkspacePath($_GET['path']), $file));
-				}
-				if ($result) {
-					echo '{"status":"success","message":"Files added"}';
-				} else {
-					echo '{"status":"error","message":"Failed add files!"}';
-				}
-			} else {
-				echo '{"status":"error","message":"Missing parameter!"}';
-			}
-			break;
-			
-		case 'commit':
-			if (isset($_GET['path']) && isset($_POST['message'])) {
-				$result = $git->commit(getWorkspacePath($_GET['path']), $_POST['message']);
-				if ($result) {
-					echo '{"status":"success","message":"Files commited"}';
-				} else {
-					echo '{"status":"error","message":"Failed commit!"}';
-				}
-			} else {
-				echo '{"status":"error","message":"Missing parameter!"}';
-			}
-			break;
-			
-		case 'log':
+    require_once('../../common.php');
+    require_once('class.git.php');
+    
+    checkSession();
+    
+    if ($_GET['action'] != 'hasRepo') {
+        $git = new Git();
+        define('CONFIG', 'git.' . $_SESSION['user'] . '.php');
+    }
+    
+    switch($_GET['action']) {
+        
+        case 'hasRepo':
             if (isset($_GET['path'])) {
-				$result = $git->getLog(getWorkspacePath($_GET['path']));
-				if ($result === false) {
-					echo '{"status":"error","message":"Failed to get log!"}';
-				} else {
-					echo '{"status":"success","data":'. json_encode($result) .'}';
-				}
-			} else {
-				echo '{"status":"error","message":"Missing parameter!"}';
-			}
+                if (file_exists($_GET['path'] . '/.git')) {
+                    echo '{"status": true,"message":"Repo exists"}';
+                } else {
+                    echo '{"status": false,"message":"Repo doesn\' exits"}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+        
+        case 'init':
+            if (isset($_GET['path'])) {
+                if ($git->init(getWorkspacePath($_GET['path']))) {
+                    echo '{"status":"success","message":"Initialized empty Git repository!"}';
+                } else {
+                    echo '{"status":"error","message":"' . $git->result . '!"}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
+        case 'clone':
+            if (isset($_GET['path']) && isset($_GET['repo'])) {
+                echo $git->cloneRepo(getWorkspacePath($_GET['path']), $_GET['repo']);
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
+        case 'status':
+            if (isset($_GET['path'])) {
+                $result = $git->status(getWorkspacePath($_GET['path']));
+                if ($result === false) {
+                    echo '{"status":"error","message":"Failed to get status!"}';
+                } else {
+                    echo '{"status":"success","data":'. json_encode($result) .'}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+           
+        case 'add':
+            if (isset($_GET['path']) && isset($_POST['files'])) {
+                $files = json_decode($_POST['files']);
+                $result = true;
+                foreach($files as $file) {
+                    $result = !(!$result | !$git->add(getWorkspacePath($_GET['path']), $file));
+                }
+                if ($result) {
+                    echo '{"status":"success","message":"Files added"}';
+                } else {
+                    echo '{"status":"error","message":"Failed add files!"}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
+        case 'commit':
+            if (isset($_GET['path']) && isset($_POST['message'])) {
+                $result = $git->commit(getWorkspacePath($_GET['path']), $_POST['message']);
+                if ($result) {
+                    echo '{"status":"success","message":"Files commited"}';
+                } else {
+                    echo '{"status":"error","message":"Failed commit!"}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
+        case 'log':
+            if (isset($_GET['path'])) {
+                $result = $git->getLog(getWorkspacePath($_GET['path']));
+                if ($result === false) {
+                    echo '{"status":"error","message":"Failed to get log!"}';
+                } else {
+                    echo '{"status":"success","data":'. json_encode($result) .'}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
             break;
             
         case 'diff':
             if (isset($_GET['repo']) && isset($_GET['path'])) {
-				$result = $git->diff(getWorkspacePath($_GET['repo']), $_GET['path']);
-				if ($result === false) {
-					echo '{"status":"error","message":"Failed to get diff!"}';
-				} else {
-					echo '{"status":"success","data":'. json_encode($result) .'}';
-				}
-			} else {
-				echo '{"status":"error","message":"Missing parameter!"}';
-			}
+                $result = $git->diff(getWorkspacePath($_GET['repo']), $_GET['path']);
+                if ($result === false) {
+                    echo '{"status":"error","message":"Failed to get diff!"}';
+                } else {
+                    echo '{"status":"success","data":'. json_encode($result) .'}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
             break;
         
         case 'checkout':
-			if (isset($_GET['repo']) && isset($_GET['path'])) {
-				if ($git->checkout(getWorkspacePath($_GET['repo']), $_GET['path'])) {
-					echo '{"status":"success","message":"Changes reverted!"}';
-				} else {
-					echo '{"status":"error","message":"Failed to undo changes!"}';
-				}
-			} else {
-				echo '{"status":"error","message":"Missing parameter!"}';
-			}
-			break;
+            if (isset($_GET['repo']) && isset($_GET['path'])) {
+                if ($git->checkout(getWorkspacePath($_GET['repo']), $_GET['path'])) {
+                    echo '{"status":"success","message":"Changes reverted!"}';
+                } else {
+                    echo '{"status":"error","message":"Failed to undo changes!"}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
             
         case 'getRemotes':
-			if (isset($_GET['path'])) {
-				$result = $git->getRemotes(getWorkspacePath($_GET['path']));
-				if ($result === false) {
-					echo '{"status":"error","message":"Failed to get remotes!"}';
-				} else {
-					echo '{"status":"success","data":'. json_encode($result) .'}';
-				}
-			} else {
-				echo '{"status":"error","message":"Missing parameter!"}';
-			}
-			break;
-			
-		case 'newRemote':
-			if (isset($_GET['path']) && isset($_GET['name']) && isset($_GET['url'])) {
-				$result = $git->newRemote(getWorkspacePath($_GET['path']), $_GET['name'], $_GET['url']);
-				if ($result === false) {
-					echo '{"status":"error","message":"Failed to create remotes!"}';
-				} else {
-					echo '{"status":"success","message": "New Remote created."}';
-				}
-			} else {
-				echo '{"status":"error","message":"Missing parameter!"}';
-			}
-			break;
-			
-		case 'removeRemote':
+            if (isset($_GET['path'])) {
+                $result = $git->getRemotes(getWorkspacePath($_GET['path']));
+                if ($result === false) {
+                    echo '{"status":"error","message":"Failed to get remotes!"}';
+                } else {
+                    echo '{"status":"success","data":'. json_encode($result) .'}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
+        case 'newRemote':
+            if (isset($_GET['path']) && isset($_GET['name']) && isset($_GET['url'])) {
+                $result = $git->newRemote(getWorkspacePath($_GET['path']), $_GET['name'], $_GET['url']);
+                if ($result === false) {
+                    echo '{"status":"error","message":"Failed to create remotes!"}';
+                } else {
+                    echo '{"status":"success","message": "New Remote created."}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
+        case 'removeRemote':
             if (isset($_GET['path']) && isset($_GET['name'])) {
-				$result = $git->removeRemote(getWorkspacePath($_GET['path']), $_GET['name']);
-				if ($result === false) {
-					echo '{"status":"error","message":"Failed to remove remote!"}';
-				} else {
-					echo '{"status":"success","message":"Remote removed!"}';
-				}
-			} else {
-				echo '{"status":"error","message":"Missing parameter!"}';
-			}
-			break;
-			
-		case 'getBranches':
-			if (isset($_GET['path'])) {
-				$result = $git->getBranches(getWorkspacePath($_GET['path']));
-				if ($result === false) {
-					echo '{"status":"error","message":"Failed to get branches!"}';
-				} else {
-					echo '{"status":"success","data":'. json_encode($result) .'}';
-				}
-			} else {
-				echo '{"status":"error","message":"Missing parameter!"}';
-			}
-			break;
-			
-		case 'newBranch':
-			if (isset($_GET['path']) && isset($_GET['name'])) {
-				$result = $git->newBranch(getWorkspacePath($_GET['path']), $_GET['name']);
-				if ($result === false) {
-					echo '{"status":"error","message":"Failed to create branch!"}';
-				} else {
-					echo '{"status":"success","message": "New branch created."}';
-				}
-			} else {
-				echo '{"status":"error","message":"Missing parameter!"}';
-			}
-			break;
-			
-		case 'deleteBranch':
-			if (isset($_GET['path']) && isset($_GET['name'])) {
-				$result = $git->deleteBranch(getWorkspacePath($_GET['path']), $_GET['name']);
-				if ($result === false) {
-					echo '{"status":"error","message":"Failed to delete branch!"}';
-				} else {
-					echo '{"status":"success","message":"Branch deleted!"}';
-				}
-			} else {
-				echo '{"status":"error","message":"Missing parameter!"}';
-			}
-			break;
-		
-		case 'checkoutBranch':
+                $result = $git->removeRemote(getWorkspacePath($_GET['path']), $_GET['name']);
+                if ($result === false) {
+                    echo '{"status":"error","message":"Failed to remove remote!"}';
+                } else {
+                    echo '{"status":"success","message":"Remote removed!"}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
+        case 'getBranches':
+            if (isset($_GET['path'])) {
+                $result = $git->getBranches(getWorkspacePath($_GET['path']));
+                if ($result === false) {
+                    echo '{"status":"error","message":"Failed to get branches!"}';
+                } else {
+                    echo '{"status":"success","data":'. json_encode($result) .'}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
+        case 'newBranch':
+            if (isset($_GET['path']) && isset($_GET['name'])) {
+                $result = $git->newBranch(getWorkspacePath($_GET['path']), $_GET['name']);
+                if ($result === false) {
+                    echo '{"status":"error","message":"Failed to create branch!"}';
+                } else {
+                    echo '{"status":"success","message": "New branch created."}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
+        case 'deleteBranch':
+            if (isset($_GET['path']) && isset($_GET['name'])) {
+                $result = $git->deleteBranch(getWorkspacePath($_GET['path']), $_GET['name']);
+                if ($result === false) {
+                    echo '{"status":"error","message":"Failed to delete branch!"}';
+                } else {
+                    echo '{"status":"success","message":"Branch deleted!"}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+        
+        case 'checkoutBranch':
             if (isset($_GET['path']) && isset($_GET['name'])) {
                 $result = $git->checkoutBranch(getWorkspacePath($_GET['path']), $_GET['name']);
                 if ($result === false) {
@@ -266,26 +266,26 @@
                 echo '{"status":"error","message":"Missing parameter!"}';
             }
             break;
-        	
-		default:
-			echo '{"status":"error","message":"No Type"}';
-			break;
-	}
-	
-	
-	function getWorkspacePath($path) {
-		if (strpos($path, "/") === 0) {
-			//Unix absolute path
-			return $path;
-		}
-		if (strpos($path, ":/") !== false) {
-			//Windows absolute path
-			return $path;
-		}
-		if (strpos($path, ":\\") !== false) {
-			//Windows absolute path
-			return $path;
-		}
-		return "../../workspace/".$path;
-	}
+            
+        default:
+            echo '{"status":"error","message":"No Type"}';
+            break;
+    }
+    
+    
+    function getWorkspacePath($path) {
+        if (strpos($path, "/") === 0) {
+            //Unix absolute path
+            return $path;
+        }
+        if (strpos($path, ":/") !== false) {
+            //Windows absolute path
+            return $path;
+        }
+        if (strpos($path, ":\\") !== false) {
+            //Windows absolute path
+            return $path;
+        }
+        return "../../workspace/".$path;
+    }
 ?>
