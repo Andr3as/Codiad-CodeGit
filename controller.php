@@ -5,7 +5,7 @@
  * See http://opensource.org/licenses/MIT for more information.
  * This information must remain intact.
  */
-    //error_reporting(0);
+    error_reporting(0);
 
     require_once('../../common.php');
     require_once('class.git.php');
