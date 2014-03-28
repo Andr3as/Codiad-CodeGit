@@ -21,7 +21,7 @@
         
         case 'hasRepo':
             if (isset($_GET['path'])) {
-                if (file_exists($_GET['path'] . '/.git')) {
+                if (file_exists(getWorkspacePath($_GET['path'] . '/.git'))) {
                     echo '{"status": true,"message":"Repo exists"}';
                 } else {
                     echo '{"status": false,"message":"Repo doesn\' exits"}';
