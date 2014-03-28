@@ -12,14 +12,14 @@
     
     checkSession();
     
-    if ($_GET['action'] != 'hasRepo') {
+    if ($_GET['action'] != 'checkRepo') {
         $git = new Git();
         define('CONFIG', 'git.' . $_SESSION['user'] . '.php');
     }
     
     switch($_GET['action']) {
         
-        case 'hasRepo':
+        case 'checkRepo':
             if (isset($_GET['path'])) {
                 if (file_exists(getWorkspacePath($_GET['path'] . '/.git'))) {
                     echo '{"status": true,"message":"Repo exists"}';

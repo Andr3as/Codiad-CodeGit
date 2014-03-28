@@ -29,29 +29,34 @@
             amplify.subscribe('filemanager.onIndex', function(obj){
                 setTimeout(function(){
                     $.each(obj.files, function(i, item){
-                        if ((item.name == obj.path + '/.git') && (item.type == 'directory')) {
-                            $('.directory[data-path="'+obj.path+'"]').addClass('hasRepo');
+                        if (_this.basename(item.name) == '.git') {
+                            $('.directory[data-path="'+_this.dirname(item.name)+'"]').addClass('repo');
+                        } else if (item.type == 'directory') {
+                            //Deeper inspect
+                            $.getJSON(_this.path + 'controller.php?action=checkRepo&path=' + item.name, function(result){
+                                if (result.status) {
+                                    $('.directory[data-path="'+item.name+'"]').addClass('repo');
+                                }
+                            });
                         }
                     });
                 },0);
             });
             //Handle context-menu
             amplify.subscribe('context-menu.onShow', function(obj){
-                //Rewrite this, for git diff on file
-                if ($('#project-root').hasClass('hasRepo')) {
-                    //Show git commands - git add, git diff
-                    $('#context-menu').append('<hr class="both code_git">');
-                    if ($(obj.e.target).hasClass('directory')) {
+                if ($(obj.e.target).hasClass('directory')) {
+                    $('#context-menu').append('<hr class="directory-only code_git">');
+                    if ($(obj.e.target).hasClass('repo')) {
                         $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.showDialog(\'overview\', $(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Open CodeGit</a>');
                     } else {
-                        $('#context-menu').append('<a class="file-only code_git" onclick="codiad.CodeGit.contextMenuDiff($(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Git Diff</a>');
-                    }
-                } else {
-                    //Show git init and clone
-                    if ($(obj.e.target).hasClass('directory')) {
-                        $('#context-menu').append('<hr class="directory-only code_git">');
                         $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.gitInit($(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Git Init</a>');
                         $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.clone($(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Git Clone</a>');
+                    }
+                } else {
+                    var path = $(obj.e.target).attr('data-path');
+                    if ($('.directory[data-path="' + _this.dirname(path) + '"]').hasClass('repo')) {
+                        $('#context-menu').append('<hr class="file-only code_git">');
+                        $('#context-menu').append('<a class="file-only code_git" onclick="codiad.CodeGit.contextMenuDiff($(\'#context-menu\').attr(\'data-path\'), \''+_this.dirname(path)+'\');"><span class="icon-flow-branch"></span>Git Diff</a>');
                     }
                 }
             });
@@ -167,8 +172,7 @@
             });
         },
         
-        contextMenuDiff: function(path) {
-            var repo        = $('#project-root').attr('data-path');
+        contextMenuDiff: function(path, repo) {
             this.location   = repo;
             path            = path.replace(repo + "/", "");
             this.files      = [];
@@ -447,6 +451,26 @@
             } else {
                 return path;
             }
+        },
+        
+        /**
+         * Get basename
+         * 
+         * @param {string} [path]
+         * @result {string} basename
+         */
+        basename: function(path) {
+            return path.replace(/\\/g,'/').replace( /.*\//, '' );
+        },
+        
+        /**
+         * Get dirname
+         * 
+         * @param {string} [path]
+         * @result {string} dirname
+         */
+        dirname: function(path) {
+            return path.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
         },
         
         addLine: function(status, name) {
