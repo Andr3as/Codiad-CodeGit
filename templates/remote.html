@@ -8,8 +8,13 @@
 		<button onclick="codiad.CodeGit.showDialog('overview', codiad.CodeGit.location); return false;">Close</button>
 		<button onclick="codiad.CodeGit.removeRemote(); return false;">Remove</button>
 		<button onclick="codiad.CodeGit.showDialog('newRemote', codiad.CodeGit.location); return false;">New</button>
+		<button onclick="renameRemote(); return false;">Rename</button>
     </footer>
     <script>
         codiad.CodeGit.getRemotes();
+        function renameRemote() {
+            codiad.CodeGit.rename = $('#git_remotes').val();
+            codiad.CodeGit.showDialog('renameRemote', codiad.CodeGit.location);
+        }
     </script>
 </div>

@@ -356,6 +356,16 @@
             this.showDialog('overview', this.location);
         },
         
+        renameRemote: function(path) {
+            path        = this.getPath(path);
+            var name    = $('#git_remote').text();
+            var newName = $('#git_new_name').val();
+            $.getJSON(this.path + 'controller.php?action=renameRemote&path=' + path + '&name=' + name + '&newName=' + newName, function(result){
+				codiad.message[result.status](result.message);
+            });
+            this.showDialog('overview', this.location);
+        },
+        
         getBranches: function(path) {
             path = this.getPath(path);
             $.getJSON(this.path + 'controller.php?action=getBranches&path=' + path, function(result){

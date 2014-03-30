@@ -171,6 +171,19 @@
             }
             break;
             
+        case 'renameRemote':
+            if (isset($_GET['path']) && isset($_GET['name']) && isset($_GET['newName'])) {
+                $result = $git->renameRemote(getWorkspacePath($_GET['path']), $_GET['name'], $_GET['newName']);
+                if ($result === false) {
+                    echo '{"status":"error","message":"Failed to rename remote!"}';
+                } else {
+                    echo '{"status":"success","message":"Remote renamed!"}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
         case 'getBranches':
             if (isset($_GET['path'])) {
                 $result = $git->getBranches(getWorkspacePath($_GET['path']));
@@ -276,7 +289,7 @@
     function getWorkspacePath($path) {
         //Security check
         if (!Common::checkPath($path)) {
-			die('{"status":"error","message":"Invalid path"}');
+            die('{"status":"error","message":"Invalid path"}');
         }
         if (strpos($path, "/") === 0) {
             //Unix absolute path

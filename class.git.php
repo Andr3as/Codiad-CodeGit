@@ -153,6 +153,17 @@
             }
         }
         
+        public function renameRemote($path, $name, $newName) {
+            if (!is_dir($path)) return false;
+            chdir($path);
+            $result = $this->executeCommand("git remote rename " . $name . " " . $newName);
+            if ($result !== 0) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        
         public function getBranches($path) {
             if (!is_dir($path)) return false;
             chdir($path);
