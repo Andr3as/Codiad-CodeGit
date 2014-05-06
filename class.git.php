@@ -41,7 +41,7 @@
         public function status($path) {
             if (!is_dir($path)) return false;
             chdir($path);
-            $result = $this->executeCommand("git status");
+            $result = $this->executeCommand("git status --branch --porcelain");
             if ($result !== 0) {
                 return false;
             }
@@ -84,7 +84,7 @@
         public function diff($repo, $path) {
             if (!is_dir($repo)) return false;
             chdir($repo);
-            $result = $this->executeCommand("git status");
+            $result = $this->executeCommand("git status --branch --porcelain");
             if ($result !== 0) {
                 return false;
             }
@@ -324,53 +324,28 @@
             $added = array();
             $modified = array();
             $untracked = array();
-            $addedLine = false;
-            $modifiedLine = false;
-            $unTrackedLine = false;
             
             foreach($this->resultArray as $line) {
-                //added files
-                if (strpos($line, "# Changes to be committed:") === 0) {
-                    $addedLine = true;
+                $tag = substr($line, 0, 2);
+                //Branch
+                if (strpos($tag, "##") !== false) {
+                    $branch = substr($line, 2);
                 }
-                //modified files
-                if (strpos($line, "# Changes not staged for commit:") === 0) {
-                    $modifiedLine = true;
+                //Added
+                if (strpos($tag, "A") !== false) {
+                    array_push($added, substr($line, 2));
                 }
-                //untracked files
-                if (strpos($line, "# Untracked files:") === 0) {
-                    $unTrackedLine = true;
+                //Modified
+                if (strpos($tag, "M") !== false) {
+                    array_push($modified, substr($line, 2));
                 }
-                //Get branch
-                if (strpos($line, "# On branch ") === 0) {
-                    $branch = substr($line, strlen("# On branch "));
-                }
-                //Get added files
-                if ($addedLine && !$modifiedLine && !$unTrackedLine) {
-                    //New files
-                    if ( (strpos($line, "#\t") === 0) && (strpos($line, ":") !== -1) ) {
-                        $pos = strpos($line, ":   ") + strlen(":   ");
-                        $file = substr($line, $pos);
-                        array_push($added, $file);
-                    }
-                }
-                //Get modified files
-                if ($modifiedLine && !$unTrackedLine) {
-                    //Modified files
-                    if (($pos = strpos($line, "#\tmodified")) === 0) {
-                        $pos += strlen("#\tmodified:   ");
-                        $file = substr($line, $pos);
-                        array_push($modified, $file);
-                    }
-                }
-                //Get untracked files
-                if ($unTrackedLine) {
-                    if (strpos($line, "#\t") === 0) {
-                        array_push($untracked, substr($line, 1));
-                    }
+                //Untracked
+                if (strpos($tag, "??") !== false) {
+                    array_push($untracked, substr($line, 3));
                 }
             }
             //Remove whitespace
+            $branch = trim($branch);
             foreach($added as $index => $file) {
                 $added[$index] = trim($file);
             }
@@ -380,14 +355,7 @@
             foreach($untracked as $index => $file) {
                 $untracked[$index] = trim($file);
             }
-            //Delete douple entries
-            $buffer = array();
-            foreach($added as $file) {
-                if (!in_array($file, $modified)) {
-                    array_push($buffer, $file);
-                }
-            }
-            $added = $buffer;
+            
             return array("branch" => $branch,"added" => $added, "modified" => $modified, "untracked" => $untracked);
         }
         
