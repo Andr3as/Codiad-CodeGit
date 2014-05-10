@@ -329,7 +329,20 @@
                 $tag = substr($line, 0, 2);
                 //Branch
                 if (strpos($tag, "##") !== false) {
-                    $branch = substr($line, 2);
+                   $initialCommit = strpos($line, "Initial commit on");
+                    if ($initialCommit !== false) {
+                        $branch = substr($line, 21);
+                    } else {
+                        $sPos = strpos($line, " ", 3);
+                        $dPos = strpos($line, "...", 3);
+                        if ( ($sPos !== false) && ($dPos === false)) {
+                            $branch = substr($line, 2, $sPos-2);
+                        } else if ($dPos !== false) {
+                            $branch = substr($line, 2, $dPos-2);
+                        } else {
+                            $branch = substr($line, 2);
+                        }
+                    }
                 }
                 //Added
                 if (strpos($tag, "A") !== false) {
@@ -355,6 +368,14 @@
             foreach($untracked as $index => $file) {
                 $untracked[$index] = trim($file);
             }
+            //Delete douple entries
+            $buffer = array();
+            foreach($added as $file) {
+                if (!in_array($file, $modified)) {
+                    array_push($buffer, $file);
+                }
+            }
+            $added = $buffer;
             
             return array("branch" => $branch,"added" => $added, "modified" => $modified, "untracked" => $untracked);
         }
