@@ -24,7 +24,7 @@
                 if (file_exists(getWorkspacePath($_GET['path'] . '/.git'))) {
                     echo '{"status": true,"message":"Repo exists"}';
                 } else {
-                    echo '{"status": false,"message":"Repo doesn\' exits"}';
+                    echo '{"status": false,"message":"Repo doesn\'t exits"}';
                 }
             } else {
                 echo '{"status":"error","message":"Missing parameter!"}';
