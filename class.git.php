@@ -5,11 +5,23 @@
  * See http://opensource.org/licenses/MIT for more information. 
  * This information must remain intact.
  */
+   include_once('config.php');
 
     class Git {
         
         public $resultArray;
         public $result;
+        
+        function __construct() {
+            $log = file_get_contents("config.log");
+            foreach(getConfig() as $name => $value) {
+                $result = $this->executeCommand("git config " . $name . " " . $value);
+                if ($result !== 0) {
+                    $log .= "Config failed: " . $name . " " . $value;
+                }
+            }
+            file_put_contents("config.log", $log);
+        }
         
         public function init($path) {
             if (!is_dir($path)) return false;
