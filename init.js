@@ -71,6 +71,22 @@
                     $('.git_area input:checkbox').removeAttr("checked");
                 }
             });
+            $('.git_area input:checkbox:not(#check_all)').live("click", function(e){
+				if ($(this).attr("checked") != "checked") {
+					//One gets unchecked, remove all_input checking
+					if ($('.git_area #check_all').attr("checked") == "checked") {
+						$('.git_area #check_all').removeAttr("checked");
+					}
+				} else {
+					var all = true;
+					$('.git_area input:checkbox:not(#check_all)').each(function(i, item){
+						all = all && ($(this).attr("checked") == "checked");
+					});
+					if (all) {
+						$('.git_area #check_all').attr("checked", "checked");
+					}
+				}
+            });
             //Button Click listener
             $('.git_area .git_diff').live("click", function(e){
                 var line = $(this).attr('data-line');
