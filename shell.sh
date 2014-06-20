@@ -61,6 +61,7 @@ cd "$path"
 
 /usr/bin/expect <<EOD
 	set result 0
+	set timeout -1
 	spawn -noecho $command
 	expect {
 		"Username for" {
@@ -73,6 +74,10 @@ cd "$path"
 		"fatal" {
 			set result 5
 			exit 5
+		}
+		"error" {
+            set result 6
+            exit 6
 		}
 		"eof" {
 			exit 0
@@ -90,6 +95,10 @@ cd "$path"
 			set result 5
 			exit 5
 		}
+		"error" {
+            set result 6
+            exit 6
+		}
 		"eof" {
 			exit 0
 		}
@@ -98,6 +107,10 @@ cd "$path"
 		"fatal" {
 			set result 5
 			exit 5
+		}
+		"error" {
+            set result 6
+            exit 6
 		}
 		"eof" {
 			exit 0
