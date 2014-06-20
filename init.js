@@ -89,6 +89,7 @@
             });
             //Button Click listener
             $('.git_area .git_diff').live("click", function(e){
+                e.preventDefault();
                 var line = $(this).attr('data-line');
                 var path = $('.git_area .git_list .file[data-line="'+line+'"]').text();
                 _this.files = [];
@@ -96,12 +97,14 @@
                 _this.showDialog('diff', _this.location);
             });
             $('.git_area .git_undo').live("click", function(e){
+				e.preventDefault();
                 var line = $(this).attr('data-line');
                 var path = $('.git_area .git_list .file[data-line="'+line+'"]').text();
                 _this.checkout(path, _this.location);
                 _this.showDialog('overview', _this.location);
             });
             $('.git_diff_area .git_undo').live("click", function(e){
+				e.preventDefault();
                 _this.checkout(_this.files[0], _this.location);
                 _this.showDialog('overview', _this.location);
             });
