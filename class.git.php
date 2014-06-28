@@ -334,7 +334,9 @@
         private function parseGitStatus() {
             $branch = "";
             $added = array();
+            $deleted = array();
             $modified = array();
+            $renamed = array();
             $untracked = array();
             
             foreach($this->resultArray as $line) {
@@ -360,9 +362,18 @@
                 if (strpos($tag, "A") !== false) {
                     array_push($added, substr($line, 2));
                 }
+                //Deleted
+                if (strpos($tag, "D") !== false) {
+					array_push($deleted, substr($line, 2));
+                }
                 //Modified
                 if (strpos($tag, "M") !== false) {
                     array_push($modified, substr($line, 2));
+                }
+                //Renamed
+                if (strpos($tag, "R") !== false) {
+					$rPos = strpos($line, "->") + 2;
+					array_push($renamed, substr($line, $rPos));
                 }
                 //Untracked
                 if (strpos($tag, "??") !== false) {
@@ -374,8 +385,14 @@
             foreach($added as $index => $file) {
                 $added[$index] = trim($file);
             }
+            foreach($deleted as $index => $file) {
+				$deleted[$index] = trim($file);
+            }
             foreach($modified as $index => $file) {
                 $modified[$index] = trim($file);
+            }
+            foreach($renamed as $index => $file) {
+				$renamed[$index] = trim($file);
             }
             foreach($untracked as $index => $file) {
                 $untracked[$index] = trim($file);
@@ -389,7 +406,8 @@
             }
             $added = $buffer;
             
-            return array("branch" => $branch,"added" => $added, "modified" => $modified, "untracked" => $untracked);
+            return array("branch" => $branch,"added" => $added, "deleted" => $deleted, 
+						"modified" => $modified, "renamed" => $renamed, "untracked" => $untracked);
         }
         
         private function untrackedDiff($path) {

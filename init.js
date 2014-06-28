@@ -294,16 +294,24 @@
                 }
                 //Reset list
                 $('.git_list tbody').html('');
-                var added, modified, untracked;
+                var added, deleted, modified, renamed, untracked;
                 added = result.data.added;
+                deleted = result.data.deleted;
                 modified = result.data.modified;
+                renamed = result.data.renamed;
                 untracked = result.data.untracked;
                 //Add entries
                 $.each(added, function(i, item){
                     _this.addLine("Added", item);
                 });
+                $.each(deleted, function(i, item){
+                    _this.addLine("Deleted", item);
+                });
                 $.each(modified, function(i, item){
                     _this.addLine("Modified", item);
+                });
+                $.each(renamed, function(i, item) {
+                    _this.addLine("Renamed", item);
                 });
                 $.each(untracked, function(i, item) {
                     _this.addLine("Untracked", item);

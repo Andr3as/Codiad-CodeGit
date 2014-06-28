@@ -50,10 +50,10 @@
     left: 5px;
     top: 15px;
 }
-.git_area .modified, .git_area .untracked {
+.git_area .modified, .git_area .untracked, .git_area .deleted {
 	color: red;
 }
-.git_area .added {
+.git_area .added, .git_area .renamed {
 	color: green;
 }
 
