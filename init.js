@@ -61,6 +61,9 @@
 						if ($('.directory[data-path="' + path + '"]').hasClass('repo')) {
 							$('#context-menu').append('<hr class="file-only code_git">');
 							$('#context-menu').append('<a class="file-only code_git" onclick="codiad.CodeGit.contextMenuDiff($(\'#context-menu\').attr(\'data-path\'), \''+_this.dirname(path)+'\');"><span class="icon-flow-branch"></span>Git Diff</a>');
+							//Git rename
+							$('#context-menu a[onclick="codiad.filemanager.renameNode($(\'#context-menu\').attr(\'data-path\'));"]')
+                                .attr("onclick", "codiad.CodeGit.rename($(\'#context-menu\').attr(\'data-path\'))");
 							break;
 						}
 						if (path == root) plusOne = false;
@@ -457,6 +460,57 @@
                 });
             }
             this.showDialog('overview', this.location);
+        },
+        
+        rename: function(fPath) {
+            var _this       = this;
+            var path = _this.dirname(fPath);
+            var old_name    = fPath.replace(path, "").substr(1);
+            if (old_name.length === 0 || old_name === fPath) {
+                //Codiad renaming
+                codiad.filemanager.renameNode(fPath);
+                return;
+            }
+            var shortName   = codiad.filemanager.getShortName(fPath);
+            var type        = codiad.filemanager.getType(fPath);
+            codiad.modal.load(250, codiad.filemanager.dialog, { action: 'rename', path: fPath, short_name: shortName, type: type});
+            $('#modal-content form')
+                .live('submit', function(e) {
+                    e.preventDefault();
+                    var newName = $('#modal-content form input[name="object_name"]')
+                        .val();
+                    // Build new path
+                    var arr = fPath.split('/');
+                    var temp = [];
+                    for (i = 0; i < arr.length - 1; i++) {
+                        temp.push(arr[i]);
+                    }
+                    var newPath = temp.join('/') + '/' + newName;
+                    codiad.modal.unload();
+                    $.getJSON(_this.path + "controller.php?action=rename&path="+path+"&old_name="+old_name+"&new_name="+newName, function(data) {
+                        if (data.status != 'error') {
+                            codiad.message.success(type.charAt(0)
+                                .toUpperCase() + type.slice(1) + ' Renamed');
+                            var node = $('#file-manager a[data-path="' + fPath + '"]');
+                            // Change pathing and name for node
+                            node.attr('data-path', newPath)
+                                .html(newName);
+                            if (type == 'file') { // Change icons for file
+                                curExtClass = 'ext-' + codiad.filemanager.getExtension(fPath);
+                                newExtClass = 'ext-' + codiad.filemanager.getExtension(newPath);
+                                $('#file-manager a[data-path="' + newPath + '"]')
+                                    .removeClass(curExtClass)
+                                    .addClass(newExtClass);
+                            } else { // Change pathing on any sub-files/directories
+                                codiad.filemanager.repathSubs(path, newPath);
+                            }
+                            // Change any active files
+                            codiad.active.rename(fPath, newPath);
+                        } else {
+                            codiad.filemanager.renameNode(fPath);
+                        }
+                    });
+                });
         },
         
         login: function(){},

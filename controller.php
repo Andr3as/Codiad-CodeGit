@@ -265,6 +265,14 @@
             }
             break;
             
+        case 'rename':
+            if (isset($_GET['path']) && isset($_GET['old_name']) && isset($_GET['new_name'])) {
+                echo $git->renameItem(getWorkspacePath($_GET['path']), $_GET['old_name'], $_GET['new_name']);
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
         case 'getSettings':
             $settings = $git->getSettings();
             echo '{"status":"success","data":'. json_encode($settings) .'}';

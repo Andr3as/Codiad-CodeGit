@@ -109,6 +109,23 @@
             } else if (in_array($path, $status['added'])) {
                 $this->executeCommand('git diff --cached ' . $path);
                 array_push($this->resultArray, "\n");
+            } else if (in_array($path, $status['renamed'])) {
+				$this->executeCommand('git diff ' . $path);
+				if ($this->result == "") {
+					$this->executeCommand('git status --branch --porcelain');
+					foreach($this->resultArray as $i => $line) {
+						if (strpos($line,$path) !== false) {
+							$name = substr($line, 2);
+							$this->resultArray = array("Renamed: " . $name . "\n");
+							break;
+						}
+					}
+				} else {
+					array_push($this->resultArray, "\n");
+				}
+            } else if (in_array($path, $status['deleted'])) {
+				$this->executeCommand('git diff -- ' . $path);
+				array_push($this->resultArray, "\n");
             } else {
                 return false;
             }
@@ -122,7 +139,23 @@
         public function checkout($repo, $path) {
             if (!is_dir($repo)) return false;
             chdir($repo);
-            $result = $this->executeCommand("git checkout -- " . $path);
+            $result = $this->executeCommand("git status --branch --porcelain");
+            if ($result !== 0) {
+				return false;
+            }
+            $status = $this->parseGitStatus();
+            $result = -1;
+            if (in_array($path, $status['renamed'])) {
+				foreach($this->resultArray as $i => $line) {
+					if (strpos($line,$path) !== false) {
+						$name = substr($line,2,strpos($line,"->") - 2);
+						$result = $this->executeCommand("git mv " . $path . " " . $name);
+						break;
+					}
+				}
+            } else {
+				$result = $this->executeCommand("git checkout -- " . $path);
+            }
             if ($result !== 0) {
                 return false;
             } else {
@@ -267,6 +300,26 @@
             return $this->parseShellResult($result, "Repository pulled!", "Failed to pull repo!");
         }
         
+        public function renameItem($path, $old_name, $new_name) {
+            if (!is_dir($path)) return false;
+            chdir($path);
+            if(!file_exists($new_path)){
+                $command = "git mv " . $old_name . " " . $new_name;
+                $result = $this->executeCommand($command);
+                if (strpos($this->result, "fatal: not under version control") !== false) {
+					if (rename($old_name,$new_name)) {
+						return $this->returnMessage("succes", "Renamed");
+					} else {
+						return $this->returnMessage("error", "Could Not Rename");
+					}
+                } else {
+					return $this->parseShellResult($result, "Renamed", "Could Not Rename");
+                }
+            }else{
+                return $this->returnMessage("error", "Path Already Exists");
+            }
+        }
+        
         public function getSettings() {
             $settings = getJSON(CONFIG, 'config');
             if (empty($settings)) {
@@ -315,6 +368,8 @@
                         $error = substr($this->result, strpos($this->result, "fatal: ") + strlen("fatal: "));
                     }
                     return $this->returnMessage("error", $error);
+                } else {
+                    return $this->returnMessage("error", $error);
                 }
             }
         }
@@ -358,25 +413,22 @@
                         }
                     }
                 }
-                //Added
+                
                 if (strpos($tag, "A") !== false) {
+					//Added
                     array_push($added, substr($line, 2));
-                }
-                //Deleted
-                if (strpos($tag, "D") !== false) {
+                } else if (strpos($tag, "D") !== false) {
+					//Deleted
 					array_push($deleted, substr($line, 2));
-                }
-                //Modified
-                if (strpos($tag, "M") !== false) {
-                    array_push($modified, substr($line, 2));
-                }
-                //Renamed
-                if (strpos($tag, "R") !== false) {
+                } else if (strpos($tag, "R") !== false) {
+					//Renamed
 					$rPos = strpos($line, "->") + 2;
 					array_push($renamed, substr($line, $rPos));
-                }
-                //Untracked
-                if (strpos($tag, "??") !== false) {
+                } else if (strpos($tag, "M") !== false) {
+					//Modified
+                    array_push($modified, substr($line, 2));
+                } else if (strpos($tag, "??") !== false) {
+					//Untracked
                     array_push($untracked, substr($line, 3));
                 }
             }
