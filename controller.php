@@ -11,6 +11,7 @@
     require_once('class.git.php');
     
     checkSession();
+    set_time_limit(0);
     
     if ($_GET['action'] != 'checkRepo') {
         $git = new Git();
