@@ -98,3 +98,8 @@
     border: none;
     padding: 0;
 }
+
+/* Git commit */
+#commit_msg {
+    height: 35px;
+}
