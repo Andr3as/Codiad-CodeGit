@@ -31,6 +31,9 @@
             case 'newRemote':
                 include('templates/newRemote.html');
                 break;
+            case 'passphrase':
+                include('templates/passphrase.html');
+                break;
             case 'renameRemote':
                 include('templates/renameRemote.html');
                 break;

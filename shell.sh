@@ -1,6 +1,6 @@
 #!/bin/bash
 #Author: Andr3as
-#Last Edit: 21.03.14
+#Last Edit: 17.07.14
 #Purpose: Handler for a git requests with authentification
 
 # Copyright (c) Codiad & Andr3as, distributed
@@ -11,6 +11,7 @@
 
 command=""
 password=0
+passphrase=0
 path=""
 user=0
 
@@ -25,6 +26,11 @@ while [ "$1" != "" ]
       elif [ "$1" == "-p" ]
 		then
 		  password=$2
+		  shift
+		  shift
+	  elif [ "$1" == "-k" ]
+		then
+		  passphrase=$2
 		  shift
 		  shift
       elif [ "$1" == "-c" ]
@@ -61,16 +67,23 @@ cd "$path"
 
 /usr/bin/expect <<EOD
 	set result 0
-	set timeout -1
+	set timeout 180
 	spawn -noecho $command
 	expect {
 		"Username for" {
 			if { "$user" == 0 } {
-					set result 3
-					exit 3
-				}
-				send "$user\n"
+				set result 3
+				exit 3
 			}
+			send "$user\n"
+		}
+		"Enter passphrase for key" {
+			if { "$passphrase" == 0 } {
+				set result 7
+				exit 7
+			}
+			send "$passphrase\n"
+		}
 		"fatal" {
 			set result 5
 			exit 5

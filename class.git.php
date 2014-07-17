@@ -280,6 +280,9 @@
             if (isset($_POST['password'])) {
                 $command = $command . ' -p "' . $_POST['password'] . '"';
             }
+            if (isset($_POST['passphrase'])) {
+                $command = $command . ' -k "' . $_POST['passphrase'] . '"';
+            }
             $result = $this->executeCommand($command);
             return $this->parseShellResult($result, "Repository pushed!", "Failed to push repo!");
         }
@@ -295,6 +298,9 @@
             }
             if (isset($_POST['password'])) {
                 $command = $command . ' -p "' . $_POST['password'] . '"';
+            }
+            if (isset($_POST['passphrase'])) {
+                $command = $command . ' -k "' . $_POST['passphrase'] . '"';
             }
             $result = $this->executeCommand($command);
             return $this->parseShellResult($result, "Repository pulled!", "Failed to pull repo!");
@@ -363,6 +369,8 @@
                     return $this->returnMessage("error", $this->result);
                 } else if ($result == 3 || $result == 4) {
                     return $this->returnMessage("login_required","Login required!");
+                } else if ($result == 7) {
+                    return $this->returnMessage("passphrase_required", "passphrase_required");
                 } else if ($result == 5) {
                     if (strpos($this->result, "fatal: ") !== false) {
                         $error = substr($this->result, strpos($this->result, "fatal: ") + strlen("fatal: "));
