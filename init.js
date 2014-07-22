@@ -58,15 +58,15 @@
                     var plusOne = false;
                     if (_this.dirname(root) == root) plusOne = true;
                     do {
-						if ($('.directory[data-path="' + path + '"]').hasClass('repo')) {
-							$('#context-menu').append('<hr class="file-only code_git">');
-							$('#context-menu').append('<a class="file-only code_git" onclick="codiad.CodeGit.contextMenuDiff($(\'#context-menu\').attr(\'data-path\'), \''+_this.dirname(path)+'\');"><span class="icon-flow-branch"></span>Git Diff</a>');
-							//Git rename
-							$('#context-menu a[onclick="codiad.filemanager.renameNode($(\'#context-menu\').attr(\'data-path\'));"]')
+                        if ($('.directory[data-path="' + path + '"]').hasClass('repo')) {
+                            $('#context-menu').append('<hr class="file-only code_git">');
+                            $('#context-menu').append('<a class="file-only code_git" onclick="codiad.CodeGit.contextMenuDiff($(\'#context-menu\').attr(\'data-path\'), \''+_this.dirname(path)+'\');"><span class="icon-flow-branch"></span>Git Diff</a>');
+                            //Git rename
+                            $('#context-menu a[onclick="codiad.filemanager.renameNode($(\'#context-menu\').attr(\'data-path\'));"]')
                                 .attr("onclick", "codiad.CodeGit.rename($(\'#context-menu\').attr(\'data-path\'))");
-							break;
-						}
-						if (path == root) plusOne = false;
+                            break;
+                        }
+                        if (path == root) plusOne = false;
                     } while (((path = _this.dirname(path)) !== root) || plusOne);
                 }
             });
@@ -82,20 +82,20 @@
                 }
             });
             $('.git_area input:checkbox:not(#check_all)').live("click", function(e){
-				if ($(this).attr("checked") != "checked") {
-					//One gets unchecked, remove all_input checking
-					if ($('.git_area #check_all').attr("checked") == "checked") {
-						$('.git_area #check_all').removeAttr("checked");
-					}
-				} else {
-					var all = true;
-					$('.git_area input:checkbox:not(#check_all)').each(function(i, item){
-						all = all && ($(this).attr("checked") == "checked");
-					});
-					if (all) {
-						$('.git_area #check_all').attr("checked", "checked");
-					}
-				}
+                if ($(this).attr("checked") != "checked") {
+                    //One gets unchecked, remove all_input checking
+                    if ($('.git_area #check_all').attr("checked") == "checked") {
+                        $('.git_area #check_all').removeAttr("checked");
+                    }
+                } else {
+                    var all = true;
+                    $('.git_area input:checkbox:not(#check_all)').each(function(i, item){
+                        all = all && ($(this).attr("checked") == "checked");
+                    });
+                    if (all) {
+                        $('.git_area #check_all').attr("checked", "checked");
+                    }
+                }
             });
             //Button Click listener
             $('.git_area .git_diff').live("click", function(e){
@@ -107,14 +107,14 @@
                 _this.showDialog('diff', _this.location);
             });
             $('.git_area .git_undo').live("click", function(e){
-				e.preventDefault();
+                e.preventDefault();
                 var line = $(this).attr('data-line');
                 var path = $('.git_area .git_list .file[data-line="'+line+'"]').text();
                 _this.checkout(path, _this.location);
                 _this.showDialog('overview', _this.location);
             });
             $('.git_diff_area .git_undo').live("click", function(e){
-				e.preventDefault();
+                e.preventDefault();
                 _this.checkout(_this.files[0], _this.location);
                 _this.showDialog('overview', _this.location);
             });
@@ -422,7 +422,7 @@
             var name    = $('#git_remote').text();
             var newName = $('#git_new_name').val();
             $.getJSON(this.path + 'controller.php?action=renameRemote&path=' + path + '&name=' + name + '&newName=' + newName, function(result){
-				codiad.message[result.status](result.message);
+                codiad.message[result.status](result.message);
             });
             this.showDialog('overview', this.location);
         },

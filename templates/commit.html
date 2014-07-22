@@ -9,12 +9,12 @@
         <button onclick="codiad.CodeGit.showDialog('overview', codiad.CodeGit.location); return false;">Close</button>
     </footer>
     <script>
-		if (codiad.CodeGit.files.length === 0) {
-			codiad.message.error("Nothing to commit!");
-			codiad.CodeGit.showDialog('overview', codiad.CodeGit.location);
-		} else {
-			codiad.CodeGit.filesDiff();
-			$('.git_commit_area #commit_msg').focus();
-		}
+        if (codiad.CodeGit.files.length === 0) {
+            codiad.message.error("Nothing to commit!");
+            codiad.CodeGit.showDialog('overview', codiad.CodeGit.location);
+        } else {
+            codiad.CodeGit.filesDiff();
+            $('.git_commit_area #commit_msg').focus();
+        }
     </script>
 </div>

@@ -14,7 +14,7 @@
     display: inline;
 }
 .git_area #check_all {
-	margin-left: 5px;
+    margin-left: 5px;
 }
 .git_area > div {
     max-height: 50vh;
@@ -39,7 +39,7 @@
     margin: auto;
 }
 .git_button {
-	border-radius: 3px;
+    border-radius: 3px;
     font-size: 12px;
     line-height: 1em;
     padding: 5px;
@@ -51,17 +51,17 @@
     top: 15px;
 }
 .git_area .modified, .git_area .untracked, .git_area .deleted {
-	color: red;
+    color: red;
 }
 .git_area .added, .git_area .renamed {
-	color: green;
+    color: green;
 }
 
 /* Git log */
 .git_log_area .git_log {
-	max-height: 55vh;
-	max-width: 60vw;
-	overflow: auto;
+    max-height: 55vh;
+    max-width: 60vw;
+    overflow: auto;
 }
 .git_log_area .git_log .commit_hash {
     color: yellow;

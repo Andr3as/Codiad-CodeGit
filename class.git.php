@@ -110,22 +110,22 @@
                 $this->executeCommand('git diff --cached ' . $path);
                 array_push($this->resultArray, "\n");
             } else if (in_array($path, $status['renamed'])) {
-				$this->executeCommand('git diff ' . $path);
-				if ($this->result == "") {
-					$this->executeCommand('git status --branch --porcelain');
-					foreach($this->resultArray as $i => $line) {
-						if (strpos($line,$path) !== false) {
-							$name = substr($line, 2);
-							$this->resultArray = array("Renamed: " . $name . "\n");
-							break;
-						}
-					}
-				} else {
-					array_push($this->resultArray, "\n");
-				}
+                $this->executeCommand('git diff ' . $path);
+                if ($this->result == "") {
+                    $this->executeCommand('git status --branch --porcelain');
+                    foreach($this->resultArray as $i => $line) {
+                        if (strpos($line,$path) !== false) {
+                            $name = substr($line, 2);
+                            $this->resultArray = array("Renamed: " . $name . "\n");
+                            break;
+                        }
+                    }
+                } else {
+                    array_push($this->resultArray, "\n");
+                }
             } else if (in_array($path, $status['deleted'])) {
-				$this->executeCommand('git diff -- ' . $path);
-				array_push($this->resultArray, "\n");
+                $this->executeCommand('git diff -- ' . $path);
+                array_push($this->resultArray, "\n");
             } else {
                 return false;
             }
@@ -141,20 +141,20 @@
             chdir($repo);
             $result = $this->executeCommand("git status --branch --porcelain");
             if ($result !== 0) {
-				return false;
+                return false;
             }
             $status = $this->parseGitStatus();
             $result = -1;
             if (in_array($path, $status['renamed'])) {
-				foreach($this->resultArray as $i => $line) {
-					if (strpos($line,$path) !== false) {
-						$name = substr($line,2,strpos($line,"->") - 2);
-						$result = $this->executeCommand("git mv " . $path . " " . $name);
-						break;
-					}
-				}
+                foreach($this->resultArray as $i => $line) {
+                    if (strpos($line,$path) !== false) {
+                        $name = substr($line,2,strpos($line,"->") - 2);
+                        $result = $this->executeCommand("git mv " . $path . " " . $name);
+                        break;
+                    }
+                }
             } else {
-				$result = $this->executeCommand("git checkout -- " . $path);
+                $result = $this->executeCommand("git checkout -- " . $path);
             }
             if ($result !== 0) {
                 return false;
@@ -313,13 +313,13 @@
                 $command = "git mv " . $old_name . " " . $new_name;
                 $result = $this->executeCommand($command);
                 if (strpos($this->result, "fatal: not under version control") !== false) {
-					if (rename($old_name,$new_name)) {
-						return $this->returnMessage("succes", "Renamed");
-					} else {
-						return $this->returnMessage("error", "Could Not Rename");
-					}
+                    if (rename($old_name,$new_name)) {
+                        return $this->returnMessage("succes", "Renamed");
+                    } else {
+                        return $this->returnMessage("error", "Could Not Rename");
+                    }
                 } else {
-					return $this->parseShellResult($result, "Renamed", "Could Not Rename");
+                    return $this->parseShellResult($result, "Renamed", "Could Not Rename");
                 }
             }else{
                 return $this->returnMessage("error", "Path Already Exists");
@@ -423,20 +423,20 @@
                 }
                 
                 if (strpos($tag, "A") !== false) {
-					//Added
+                    //Added
                     array_push($added, substr($line, 2));
                 } else if (strpos($tag, "D") !== false) {
-					//Deleted
-					array_push($deleted, substr($line, 2));
+                    //Deleted
+                    array_push($deleted, substr($line, 2));
                 } else if (strpos($tag, "R") !== false) {
-					//Renamed
-					$rPos = strpos($line, "->") + 2;
-					array_push($renamed, substr($line, $rPos));
+                    //Renamed
+                    $rPos = strpos($line, "->") + 2;
+                    array_push($renamed, substr($line, $rPos));
                 } else if (strpos($tag, "M") !== false) {
-					//Modified
+                    //Modified
                     array_push($modified, substr($line, 2));
                 } else if (strpos($tag, "??") !== false) {
-					//Untracked
+                    //Untracked
                     array_push($untracked, substr($line, 3));
                 }
             }
@@ -446,13 +446,13 @@
                 $added[$index] = trim($file);
             }
             foreach($deleted as $index => $file) {
-				$deleted[$index] = trim($file);
+                $deleted[$index] = trim($file);
             }
             foreach($modified as $index => $file) {
                 $modified[$index] = trim($file);
             }
             foreach($renamed as $index => $file) {
-				$renamed[$index] = trim($file);
+                $renamed[$index] = trim($file);
             }
             foreach($untracked as $index => $file) {
                 $untracked[$index] = trim($file);
@@ -467,7 +467,7 @@
             $added = $buffer;
             
             return array("branch" => $branch,"added" => $added, "deleted" => $deleted, 
-						"modified" => $modified, "renamed" => $renamed, "untracked" => $untracked);
+                        "modified" => $modified, "renamed" => $renamed, "untracked" => $untracked);
         }
         
         private function untrackedDiff($path) {
