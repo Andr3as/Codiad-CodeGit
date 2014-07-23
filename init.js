@@ -142,6 +142,7 @@
                 codiad.message[result.status](result.message);
                 if (result.status == 'success') {
                     $('.directory[data-path="'+path+'"]').addClass('hasRepo');
+                    codiad.filemanager.rescan(path);
                 }
             });
         },
