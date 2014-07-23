@@ -126,15 +126,27 @@
         },
         
         showCommitDialog: function(path) {
-            path = this.getPath(path);
-            var files = [], line = 0, file = "";
-            $('.git_area .git_list input:checkbox[checked="checked"]').each(function(i, item){
-                line = $(item).attr('data-line');
-                file = $('.git_area .git_list .file[data-line="'+line+'"]').text();
-                files.push(file);
+            var _this = this;
+            $.getJSON(this.path + 'controller.php?action=getSettings', function(data){
+                if (data.status == "success") {
+                    if (data.data.email === ""){
+                        codiad.message.notice("Please tell git who you are");
+                        _this.showDialog('settings', _this.location);
+                    } else {
+                        path = _this.getPath(path);
+                        var files = [], line = 0, file = "";
+                        $('.git_area .git_list input:checkbox[checked="checked"]').each(function(i, item){
+                            line = $(item).attr('data-line');
+                            file = $('.git_area .git_list .file[data-line="'+line+'"]').text();
+                            files.push(file);
+                        });
+                        _this.files = files;
+                        _this.showDialog('commit', _this.location);
+                    }
+                } else {
+                    codiad.message.error(data.message);
+                }
             });
-            this.files = files;
-            this.showDialog('commit', this.location);
         },
         
         gitInit: function(path) {
