@@ -476,6 +476,9 @@
                     if ($file == '.' || $file == '..') {
                         continue;
                     }
+                    if (ereg("/$", $path) === false) {
+                        $path .= "/";
+                    }
                     $res = $this->untrackedDiff($path . $file);
                     foreach($res as $line) {
                         array_push($result, $line);
