@@ -3,6 +3,7 @@
 Git integration for Codiad
 
 ##Requirements
+- Git version: 1.7.2
 - Expect (sudo apt-get install expect or [expect.sourceforge.net/](expect.sourceforge.net/))
   - Only required for clone, push and pull
 
