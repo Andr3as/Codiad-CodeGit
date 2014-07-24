@@ -75,7 +75,7 @@
                 if ($result) {
                     echo '{"status":"success","message":"Files added"}';
                 } else {
-                    echo '{"status":"error","message":"Failed add files!"}';
+                    echo $git->message;
                 }
             } else {
                 echo '{"status":"error","message":"Missing parameter!"}';
@@ -84,12 +84,7 @@
             
         case 'commit':
             if (isset($_GET['path']) && isset($_POST['message'])) {
-                $result = $git->commit(getWorkspacePath($_GET['path']), $_POST['message']);
-                if ($result) {
-                    echo '{"status":"success","message":"Files commited"}';
-                } else {
-                    echo '{"status":"error","message":"Failed commit!"}';
-                }
+                echo $git->commit(getWorkspacePath($_GET['path']), $_POST['message']);
             } else {
                 echo '{"status":"error","message":"Missing parameter!"}';
             }

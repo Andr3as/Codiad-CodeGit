@@ -11,6 +11,7 @@
         
         public $resultArray;
         public $result;
+        public $message;
         
         function __construct() {
             $log = file_get_contents("config.log");
@@ -67,6 +68,7 @@
             if ($result === 0) {
                 return true;
             } else {
+                $this->message = $this->parseShellResult($result, "Changes added", "Failed to add changes");
                 return false;
             }
         }
@@ -75,10 +77,9 @@
             if (!is_dir($path)) return false;
             chdir($path);
             if ($this->setGitSettings()) {
+                $msg    = str_replace("\"","\\\"",$msg);
                 $result = $this->executeCommand("git commit -m \"" . $msg . "\"");
-                if ($result === 0) {
-                    return true;
-                }
+                return $this->parseShellResult($result, "Changes commited", "Failed to commit changes!");
             }
             return false;
         }
@@ -371,12 +372,10 @@
                     return $this->returnMessage("login_required","Login required!");
                 } else if ($result == 7) {
                     return $this->returnMessage("passphrase_required", "passphrase_required");
-                } else if ($result == 5) {
-                    if (strpos($this->result, "fatal: ") !== false) {
+                } else {
+                	if (strpos($this->result, "fatal: ") !== false) {
                         $error = substr($this->result, strpos($this->result, "fatal: ") + strlen("fatal: "));
                     }
-                    return $this->returnMessage("error", $error);
-                } else {
                     return $this->returnMessage("error", $error);
                 }
             }
