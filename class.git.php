@@ -80,7 +80,7 @@
                 $result = $this->executeCommand("git commit -m \"" . $msg . "\"");
                 return $this->parseShellResult($result, "Changes commited", "Failed to commit changes!");
             }
-            return false;
+            return $this->parseShellResult(null, null, "Failed to set settings!");
         }
         
         public function getLog($path) {
@@ -362,6 +362,9 @@
         }
         
         private function parseShellResult($result, $success, $error) {
+            if ($result === null) {
+                return $error;
+            }
             if ($result === 0) {
                 return $this->returnMessage("success", $success);
             } else {
