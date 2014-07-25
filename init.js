@@ -120,6 +120,14 @@
             });
         },
         
+        showSidebarDialog: function() {
+            if (!$('#project-root').hasClass('repo')) {
+                codiad.message.error('Project root has no repository. Use the context menu!');
+                return;
+            }
+            codiad.CodeGit.showDialog('overview', $('#project-root').attr('data-path'));
+        },
+        
         showDialog: function(type, path) {
             this.location = path || this.location;
             codiad.modal.load(600, this.path + 'dialog.php?action=' + type);
