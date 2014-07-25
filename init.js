@@ -138,7 +138,7 @@
             $.getJSON(this.path + 'controller.php?action=getSettings', function(data){
                 if (data.status == "success") {
                     if (data.data.email === ""){
-                        codiad.message.notice("Please tell git who you are");
+                        codiad.message.notice("Please tell git who you are:");
                         _this.showDialog('settings', _this.location);
                     } else {
                         path = _this.getPath(path);

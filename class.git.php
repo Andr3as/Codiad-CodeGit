@@ -375,7 +375,7 @@
                 } else if ($result == 7) {
                     return $this->returnMessage("passphrase_required", "passphrase_required");
                 } else {
-                	if (strpos($this->result, "fatal: ") !== false) {
+                    if (strpos($this->result, "fatal: ") !== false) {
                         $error = substr($this->result, strpos($this->result, "fatal: ") + strlen("fatal: "));
                     }
                     return $this->returnMessage("error", $error);
