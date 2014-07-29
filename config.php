@@ -1,5 +1,5 @@
 <?php
-	/* Add your config here
+	/* Add your git config here
 		Example:
 		"http.sslVerify" => "false"
 	*/
