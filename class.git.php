@@ -11,7 +11,6 @@
         
         public $resultArray;
         public $result;
-        public $message;
         
         function __construct() {
             $log = file_get_contents("config.log");
@@ -63,12 +62,13 @@
         
         public function add($path, $file) {
             if (!is_dir($path)) return false;
+            $cwd = getcwd();
             chdir($path);
             $result = $this->executeCommand("git add " . $file);
+            chdir($cwd);
             if ($result === 0) {
                 return true;
             } else {
-                $this->message = $this->parseShellResult($result, "Changes added", "Failed to add changes");
                 return false;
             }
         }

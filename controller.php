@@ -68,15 +68,17 @@
         case 'add':
             if (isset($_GET['path']) && isset($_POST['files'])) {
                 $files = json_decode($_POST['files']);
-                $result = true;
-                foreach($files as $file) {
-                    $result = !(!$result | !$git->add(getWorkspacePath($_GET['path']), $file));
+                if ($files) {
+                    $result = true;
+                    foreach($files as $file) {
+                        $result = !(!$result | !$git->add(getWorkspacePath($_GET['path']), $file));
+                    }
+                    if ($result) {
+                        echo '{"status":"success","message":"Changes added"}';
+                        break;
+                    }
                 }
-                if ($result) {
-                    echo '{"status":"success","message":"Files added"}';
-                } else {
-                    echo $git->message;
-                }
+                echo '{"status":"success","message":"Failed to add changes"}';
             } else {
                 echo '{"status":"error","message":"Missing parameter!"}';
             }
