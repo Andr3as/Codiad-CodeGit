@@ -221,6 +221,15 @@
                     $array[$index] = $current;
                 }
             }
+            if (count($array) === 0) {
+                $result = $this->executeCommand("git status --branch --porcelain");
+                if ($result !== 0) {
+                    return false;
+                }
+                $status     = $this->parseGitStatus();
+                $array[0]   = $status['branch'];
+                $current    = $status['branch'];
+            }
             return array("branches" => $array, "current" => $current);
         }
         
