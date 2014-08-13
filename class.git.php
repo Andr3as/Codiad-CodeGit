@@ -64,7 +64,7 @@
             if (!is_dir($path)) return false;
             $cwd = getcwd();
             chdir($path);
-            $result = $this->executeCommand("git add " . $file);
+            $result = $this->executeCommand("git add --all " . $file);
             chdir($cwd);
             if ($result === 0) {
                 return true;
