@@ -306,7 +306,7 @@
                         var username = $('.git_login_area #username').val();
                         var password = $('.git_login_area #password').val();
                         _this.showDialog('overview', _this.location);
-                        $.post(_this.path + 'controller.php?action=push&path=' + _this.location + '&remote=' + remote + '&branch=' + branch,
+                        $.post(_this.path + 'controller.php?action=pull&path=' + _this.location + '&remote=' + remote + '&branch=' + branch,
                             {username: username, password: password}, function(result){
                                 result = JSON.parse(result);
                                 codiad.message[result.status](result.message);
@@ -318,7 +318,7 @@
                     _this.login = function() {
                         var passphrase = $('.git_login_area #passphrase').val();
                         _this.showDialog('overview', _this.location);
-                        $.post(_this.path + 'controller.php?action=push&path=' + _this.location + '&remote=' + remote + '&branch=' + branch,
+                        $.post(_this.path + 'controller.php?action=pull&path=' + _this.location + '&remote=' + remote + '&branch=' + branch,
                             {passphrase: passphrase}, function(result){
                                 result = JSON.parse(result);
                                 codiad.message[result.status](result.message);
