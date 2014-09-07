@@ -11,6 +11,11 @@ Git integration for Codiad
 
 - Download the zip file and unzip it to your plugin folder.
 
+###Installation Guides
+The standard installation works with Debian based systems, for other check the installation guides:  
+
+- [FreeBSD](https://github.com/Andr3as/Codiad-CodeGit/wiki/FreeBSD-installation)
+
 ##Problems?
 
 Check the [wiki](https://github.com/Andr3as/Codiad-CodeGit/wiki) or open an issue.
