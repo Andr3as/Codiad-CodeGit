@@ -1,6 +1,6 @@
 #!/bin/bash
 #Author: Andr3as
-#Last Edit: 17.07.14
+#Last Edit: 11.09.14
 #Purpose: Handler for a git requests with authentification
 
 # Copyright (c) Codiad & Andr3as, distributed
@@ -83,6 +83,13 @@ cd "$path"
                 exit 7
             }
             send "$passphrase\n"
+        }
+        "Password for" {
+            if { "$password" == 0 } {
+                set result 4
+                exit 4
+            }
+            send "$password\n"
         }
         "fatal" {
             set result 5
