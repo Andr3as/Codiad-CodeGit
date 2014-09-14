@@ -271,6 +271,19 @@
             }
             break;
             
+        case 'numstat':
+            if (isset($_GET['path'])) {
+                $result = $git->numstat(getWorkspacePath($_GET['path']));
+                if ($result !== false) {
+                    echo $result;
+                } else {
+                    echo '{"status":"error","message":"Failed to get numstat"}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
         case 'getSettings':
             $settings = $git->getSettings();
             echo '{"status":"success","data":'. json_encode($settings) .'}';

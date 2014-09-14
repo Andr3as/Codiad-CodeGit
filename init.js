@@ -63,7 +63,7 @@
                             $('#context-menu').append('<a class="file-only code_git" onclick="codiad.CodeGit.contextMenuDiff($(\'#context-menu\').attr(\'data-path\'), \''+_this.dirname(path)+'\');"><span class="icon-flow-branch"></span>Git Diff</a>');
                             //Git rename
                             $('#context-menu a[onclick="codiad.filemanager.renameNode($(\'#context-menu\').attr(\'data-path\'));"]')
-                                .attr("onclick", "codiad.CodeGit.rename($(\'#context-menu\').attr(\'data-path\'))");
+                            .attr("onclick", "codiad.CodeGit.rename($(\'#context-menu\').attr(\'data-path\'))");
                             break;
                         }
                         if (path == root) plusOne = false;
@@ -72,6 +72,19 @@
             });
             amplify.subscribe("context-menu.onHide", function(){
                 $('.code_git').remove();
+            });
+            //File stats
+            $('#current-file').after('<div class="divider"></div><div id="git-stat"></div>');
+            amplify.subscribe('active.onFocus', function(path){
+                _this.numstat(path);
+            });
+            amplify.subscribe('active.onSave', function(path){
+                setTimeout(function(){
+                    _this.numstat(path);
+                }, 50);
+            });
+            amplify.subscribe('active.onClose', function(path){
+                $('#git-stat').html("");
             });
             //Live features
             $('.git_area #check_all').live("click", function(e){
@@ -235,7 +248,7 @@
             path = this.getPath(path);
             var message = $('.git_commit_area #commit_msg').val();
             this.showDialog('overview', this.location);
-            $.post(this.path + 'controller.php?action=add&path=' + path, {files : JSON.stringify(this.files)}, function(result){
+            $.post(this.path + 'controller.php?action=add&path=' + path, {files : JSON.stringify(_this.files)}, function(result){
                 result = JSON.parse(result);
                 if (result.status == 'error') {
                     codiad.message.error(result.message);
@@ -509,7 +522,7 @@
         
         rename: function(fPath) {
             var _this       = this;
-            var path = _this.dirname(fPath);
+            var path        = _this.dirname(fPath);
             var old_name    = fPath.replace(path, "").substr(1);
             if (old_name.length === 0 || old_name === fPath) {
                 //Codiad renaming
@@ -556,6 +569,20 @@
                         }
                     });
                 });
+        },
+        
+        numstat: function(path) {
+            if (typeof(path) == 'undefined') {
+                path = codiad.active.getPath();
+            }
+            $.getJSON(this.path + 'controller.php?action=numstat&path='+path, function(json){
+                var insert = "";
+                if (json.status != "error") {
+                    var data    = json.data;
+                    insert      = '<span class="icon-flow-branch"></span>'+ data.branch + ' +' + data.insertions + ',-' + data.deletions;
+                }
+                $('#git-stat').html(insert);
+            });
         },
         
         login: function(){},

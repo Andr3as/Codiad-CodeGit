@@ -99,7 +99,9 @@
     padding: 0;
 }
 
-/* Git commit */
-#commit_msg {
-    height: 35px;
+/* Git stats */
+.git-stat {
+    color: rgb(255, 152, 45);
+    color: rgba(255, 152, 45, 0.7);
+}
 }

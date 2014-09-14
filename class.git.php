@@ -335,6 +335,47 @@
             }
         }
         
+        public function numstat($path) {
+            if (file_exists($path)) {
+                $dirname    = dirname($path);
+                $filename   = basename($path);
+                chdir($dirname);
+                $result = $this->executeCommand("git status --branch --porcelain");
+                if ($result !== 0) {
+                    return false;
+                }
+                $status = $this->parseGitStatus();
+                $result = -1;
+                $plus   = 0;
+                $minus  = 0;
+                if (in_array($filename, $status['untracked'])) {
+                    $file = file_get_contents($filename);
+                    $file = explode("\n",$file);
+                    $plus = count($file);
+                    $minus = 0;
+                } else {
+                    $command    = "git diff --numstat " . $filename;
+                    $result     = $this->executeCommand($command);
+                    if ($result === 0) {
+                        if ($this->result === "") {
+                            $plus   = 0;
+                            $minus  = 0;
+                        } else {
+                            $stats  = explode("\t",$this->result);
+                            $plus   = $stats[0];
+                            $minus  = $stats[1];
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+                $result = array("status" => "success", "data" => array("branch" => $status['branch'], "insertions" => $plus,"deletions" => $minus));
+                echo json_encode($result);
+            } else {
+                return $this->returnMessage("error", "File Does Not Exist");
+            }
+        }
+        
         public function getSettings() {
             $settings = getJSON(CONFIG, 'config');
             if (empty($settings)) {
