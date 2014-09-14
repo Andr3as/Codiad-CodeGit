@@ -53,21 +53,22 @@
                         $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.clone($(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Git Clone</a>');
                     }
                 } else {
-                    var path = _this.dirname($(obj.e.target).attr('data-path'));
+                    var path = $(obj.e.target).attr('data-path');
                     var root = $('#project-root').attr('data-path');
-                    var plusOne = false;
-                    if (_this.dirname(root) == root) plusOne = true;
-                    do {
+                    var counter = 0;
+                    while (path != root) {
+                        path = _this.dirname(path);
                         if ($('.directory[data-path="' + path + '"]').hasClass('repo')) {
                             $('#context-menu').append('<hr class="file-only code_git">');
                             $('#context-menu').append('<a class="file-only code_git" onclick="codiad.CodeGit.contextMenuDiff($(\'#context-menu\').attr(\'data-path\'), \''+_this.dirname(path)+'\');"><span class="icon-flow-branch"></span>Git Diff</a>');
                             //Git rename
                             $('#context-menu a[onclick="codiad.filemanager.renameNode($(\'#context-menu\').attr(\'data-path\'));"]')
-                            .attr("onclick", "codiad.CodeGit.rename($(\'#context-menu\').attr(\'data-path\'))");
+                                .attr("onclick", "codiad.CodeGit.rename($(\'#context-menu\').attr(\'data-path\'))");
                             break;
                         }
-                        if (path == root) plusOne = false;
-                    } while (((path = _this.dirname(path)) !== root) || plusOne);
+                        if (counter >= 10) break;
+                        counter++;
+                    }
                 }
             });
             amplify.subscribe("context-menu.onHide", function(){
