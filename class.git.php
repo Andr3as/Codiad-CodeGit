@@ -500,7 +500,7 @@
                     //Renamed
                     $rPos = strpos($line, "->") + 2;
                     array_push($renamed, substr($line, $rPos));
-                } else if (strpos($tag, "M") !== false) {
+                } else if (strpos($tag, "M") !== false || strpos($tag, "U") !== false) {
                     //Modified
                     array_push($modified, substr($line, 2));
                 } else if (strpos($tag, "??") !== false) {
