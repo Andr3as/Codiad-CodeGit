@@ -39,6 +39,9 @@
             if (!$this->checkExecutableFile()) {
                 return $this->returnMessage("error","Failed to change permissions of shell.sh");
             }
+            if (!$this->checkExpectExists()) {
+                return $this->returnMessage("error", "Please install expect!");
+            }
             $command = './shell.sh -s "' . $path . '" -c "git clone ' . $repo . ' ./"';
             if (isset($_POST['username'])) {
                 $command = $command . ' -u "' . $_POST['username'] . '"';
@@ -282,6 +285,9 @@
             if (!$this->checkExecutableFile()) {
                 return $this->returnMessage("error","Failed to change permissions of shell.sh");
             }
+            if (!$this->checkExpectExists()) {
+                return $this->returnMessage("error", "Please install expect!");
+            }
             $command = './shell.sh -s "' . $path . '" -c "git push ' . $remote . ' ' . $branch . '"';
             if (isset($_POST['username'])) {
                 $command = $command . ' -u "' . $_POST['username'] . '"';
@@ -300,6 +306,9 @@
             if (!is_dir($path)) return $this->returnMessage("error", "Wrong path!");
             if (!$this->checkExecutableFile()) {
                 return $this->returnMessage("error","Failed to change permissions of shell.sh");
+            }
+            if (!$this->checkExpectExists()) {
+                return $this->returnMessage("error", "Please install expect!");
             }
             $command = './shell.sh -s "' . $path . '" -c "git pull ' . $remote . ' ' . $branch . '"';
             if (isset($_POST['username'])) {
@@ -405,6 +414,14 @@
                 }
             }
             return true;
+        }
+        
+        private function checkExpectExists() {
+            if (`which expect`) {
+                return true;
+            } else {
+                return false;
+            }
         }
         
         private function returnMessage($status, $msg) {
