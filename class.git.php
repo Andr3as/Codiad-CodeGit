@@ -130,13 +130,13 @@
                 $this->executeCommand('git diff -- ' . $path);
                 array_push($this->resultArray, "\n");
             } else {
-                return false;
+                return $this->returnMessage("notice", "No changes!");
             }
             foreach($this->resultArray as $index => $line) {
                 $line = str_replace ("\t", "    ", $line);
                 $this->resultArray[$index] = htmlentities($line);
             }
-            return $this->resultArray;
+            return '{"status":"success","data":'. json_encode($this->resultArray) .'}';
         }
         
         public function checkout($repo, $path) {

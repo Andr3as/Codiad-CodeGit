@@ -111,7 +111,7 @@
                 if ($result === false) {
                     echo '{"status":"error","message":"Failed to get diff!"}';
                 } else {
-                    echo '{"status":"success","data":'. json_encode($result) .'}';
+                    echo $result;
                 }
             } else {
                 echo '{"status":"error","message":"Missing parameter!"}';

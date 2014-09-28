@@ -215,10 +215,12 @@
         },
         
         diff: function(path, repo) {
-            repo = this.getPath(repo);
+            var _this   = this;
+            repo        = this.getPath(repo);
             $.getJSON(this.path + 'controller.php?action=diff&repo=' + repo + '&path=' + path, function(result){
-                if (result.status == 'error') {
-                    codiad.message.error(result.message);
+                if (result.status != 'success') {
+                    codiad.message[result.status](result.message);
+                    _this.showDialog('overview', repo);
                     return;
                 }
                 $.each(result.data, function(i, item){
