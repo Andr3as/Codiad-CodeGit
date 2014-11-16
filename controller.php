@@ -233,6 +233,19 @@
                 echo '{"status":"error","message":"Missing parameter!"}';
             }
             break;
+        
+        case 'renameBranch':
+            if (isset($_GET['path']) && isset($_GET['name']) && isset($_GET['newName'])) {
+                $result = $git->renameBranch(getWorkspacePath($_GET['path']), $_GET['name'], $_GET['newName']);
+                if ($result === false) {
+                    echo '{"status":"error","message":"Failed to rename branch!"}';
+                } else {
+                    echo '{"status":"success","message":"Branch renamed!"}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
             
         case 'merge':
             if (isset($_GET['path']) && isset($_GET['name'])) {

@@ -13,7 +13,7 @@
     <script>
         codiad.CodeGit.getRemotes();
         function renameRemote() {
-            codiad.CodeGit.rename = $('#git_remotes').val();
+            codiad.CodeGit.name = $('#git_remotes').val();
             codiad.CodeGit.showDialog('renameRemote', codiad.CodeGit.location);
         }
     </script>

@@ -509,6 +509,16 @@
             this.showDialog('overview', this.location);
         },
         
+        renameBranch: function(path) {
+            path        = this.getPath(path);
+            var name    = $('#git_branch').text();
+            var newName = $('#git_new_name').val();
+            $.getJSON(this.path + 'controller.php?action=renameBranch&path=' + path + '&name=' + name + '&newName=' + newName, function(result){
+                codiad.message[result.status](result.message);
+            });
+            this.showDialog('overview', this.location);
+        },
+        
         merge: function(path) {
             var _this = this;
             path = this.getPath(path);

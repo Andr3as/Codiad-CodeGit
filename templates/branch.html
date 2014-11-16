@@ -8,9 +8,14 @@
         <button onclick="codiad.CodeGit.merge(codiad.CodeGit.location); return false;">Merge</button>
         <button onclick="codiad.CodeGit.checkoutBranch(codiad.CodeGit.location); return false;">Checkout</button>
         <button onclick="codiad.CodeGit.showDialog('newBranch', codiad.CodeGit.location); return false;">New</button>
+        <button onclick="renameBranch(); return false;">Rename</button>
         <button onclick="codiad.CodeGit.deleteBranch(); return false;">Delete</button>
     </footer>
     <script>
         codiad.CodeGit.getBranches();
+        function renameBranch() {
+            codiad.CodeGit.name = $('#git_branches').val();
+            codiad.CodeGit.showDialog('renameBranch', codiad.CodeGit.location);
+        }
     </script>
 </div>

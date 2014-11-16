@@ -269,6 +269,17 @@
             }
         }
         
+        public function renameBranch($path, $name, $newName) {
+            if (!is_dir($path)) return false;
+            chdir($path);
+            $result = $this->executeCommand("git branch -m " . $name . " " . $newName);
+            if ($result !== 0) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        
         public function merge($path, $name) {
             if (!is_dir($path)) return false;
             chdir($path);

@@ -34,6 +34,9 @@
             case 'passphrase':
                 include('templates/passphrase.html');
                 break;
+            case 'renameBranch':
+                include('templates/renameBranch.html');
+                break;
             case 'renameRemote':
                 include('templates/renameRemote.html');
                 break;

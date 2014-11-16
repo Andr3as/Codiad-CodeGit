@@ -17,7 +17,7 @@
     margin-left: 5px;
 }
 .git_area > div {
-    max-height: 50vh;
+    max-height: 45vh;
     overflow-y: scroll;
 }
 .git_list td {
