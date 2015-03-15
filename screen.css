@@ -104,11 +104,10 @@
     color: rgb(255, 152, 45);
     color: rgba(255, 152, 45, 0.7);
 }
-}
 
 /* Editor Botom Bar */
 
 #git-stat {
     float: left;
 }
-}
+
