@@ -87,6 +87,9 @@
             amplify.subscribe('active.onClose', function(path){
                 $('#git-stat').html("");
             });
+            amplify.subscribe('active.onRemoveAll', function(){
+                $('#git-stat').html("");
+            });
             //Live features
             $('.git_area #check_all').live("click", function(e){
                 if ($('.git_area #check_all').attr("checked") == "checked") {
