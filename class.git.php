@@ -463,6 +463,8 @@
         
         private function executeCommand($cmd) {
             $cmd = escapeshellcmd($cmd);
+            //Allow #
+            $cmd = str_replace("\#","#",$cmd);
             exec($cmd. ' 2>&1', $array, $result);
             $this->resultArray = $array;
             $this->getResultString();
