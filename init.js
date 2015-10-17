@@ -354,6 +354,11 @@
             if (result) {
                 $.getJSON(this.path + 'controller.php?action=checkout&repo=' + repo + '&path=' + path, function(result){
                     codiad.message[result.status](result.message);
+                    if (codiad.active.isOpen(repo + "/" + path)) {
+                        codiad.message.notice("Reloading file after undoing changes");
+                        codiad.active.close(repo + "/" + path);
+                        codiad.filemanager.openFile(repo + "/" + path);
+                    }
                 });
             }
         },
