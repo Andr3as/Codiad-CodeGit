@@ -111,3 +111,22 @@
     float: left;
 }
 
+#git-repo-stat-wrapper {
+	margin: 5px 0px 0px 0px;
+	padding: 2px 10px 2px 10px;
+	cursor: pointer;
+}
+
+.git-repo-stat-valid {
+	background-color: green;
+}
+.git-repo-stat-invalid {
+	background-color: red;
+}
+.git-repo-stat-untracked {
+	background-color: blue;
+}
+
+.hidden {
+	display: none;
+}
