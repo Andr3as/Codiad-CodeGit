@@ -126,7 +126,25 @@
 .git-repo-stat-untracked {
 	background-color: blue;
 }
+.git-repo-icon-valid {
+	color: green;
+}
+.git-repo-icon-invalid {
+	color: red;
+}
+.git-repo-icon-untracked {
+	color: blue;
+}
 
 .hidden {
 	display: none;
+}
+
+#file-manager span.uncommit:before {
+	content: "\25cf";
+  font-size: 1.9em;
+}
+#file-manager span.uncommit {
+	float: left;
+	padding-top: 8px;
 }
