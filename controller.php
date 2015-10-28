@@ -304,7 +304,12 @@
             
         case 'setSettings':
             if (isset($_POST['username']) && isset($_POST['email'])) {
-                $settings = array('username' => $_POST['username'], 'email' => $_POST['email']);
+							// git the system-wide settings to determine whether or not to allow an override
+	            $pluginSettings = getJSON('git.php', 'config');
+                $settings = array(
+									'username' => $pluginSettings['lockuser'] == "true" ? $_SESSION['user'] : $_POST['username'], 
+									'email' => $_POST['email']
+								);
                 saveJSON(CONFIG, $settings, 'config');
                 echo '{"status":"success","message":"Settings saved"}';
             } else {
