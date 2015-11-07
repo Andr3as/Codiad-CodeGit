@@ -305,7 +305,7 @@
         case 'setSettings':
             if (isset($_POST['username']) && isset($_POST['email'])) {
 							// git the system-wide settings to determine whether or not to allow an override
-	            $pluginSettings = getJSON('git.php', 'config');
+	            $pluginSettings = getJSON('git.settings.php', 'config');
                 $settings = array(
 									'username' => $pluginSettings['lockuser'] == "true" ? $_SESSION['user'] : $_POST['username'], 
 									'email' => $_POST['email']
