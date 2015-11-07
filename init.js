@@ -49,11 +49,11 @@
 										
 									
                   //Check if directories has git repo
-                  if ($('#project-root').hasClass('repo') && _this.isEnabled()) {
+                  if ($('#project-root').hasClass('repo') && _this.isEnabledRepoStatus()) {
 										// add a poller
 				            _this._poller = setInterval(function(){
 				                _this.repostat();
-				            }, 500);
+				            }, 10000);
 				            _this.addStatusIcon();
 										// only show stat-wrapper if not configured
                     _this.isEnabledWrapper() && $("#git-repo-stat-wrapper").show();
@@ -737,25 +737,27 @@
         setBranch: function(branch) {
             $('.git_area .branch').text(branch);
         },
-				addStatusIcon: function () {
-					if ($("span#git-repo-status-icon").length < 1) {
-		        $('#file-manager #project-root').before('<span id="git-repo-status-icon" class="hidden uncommit"></span>');
-					}
-				},
-				
-				isEnabled: function () {
-					var setting = localStorage.getItem('codiad.plugin.codegit.disable'), ret = true;
+
+        addStatusIcon: function () {
+          if ($("span#git-repo-status-icon").length < 1) {
+            $('#file-manager #project-root').before('<span id="git-repo-status-icon" class="hidden uncommit"></span>');
+          }
+        },
+
+        isEnabledRepoStatus: function () {
+          var setting = localStorage.getItem('codiad.plugin.codegit.disableRepoStatus'), ret = true;
           if (setting === "true") {
               ret = false;
           }
-					return(ret);
-				},
-				isEnabledWrapper: function () {
-					var setting = localStorage.getItem('codiad.plugin.codegit.disableHeader'), ret = true;
+          return(ret);
+        },
+
+        isEnabledWrapper: function () {
+          var setting = localStorage.getItem('codiad.plugin.codegit.disableHeader'), ret = true;
           if (setting === "true") {
               ret = false;
           }
-					return(ret);
-				}
+          return(ret);
+        }
     };
 })(this, jQuery);
