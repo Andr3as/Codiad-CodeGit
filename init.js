@@ -124,6 +124,9 @@
                 _this.repostat();
                 $('#git-stat').html("");
             });
+            amplify.subscribe('settings.changed', function(){
+              //React here on changed settings
+            });
             //Live features
             $('.git_area #check_all').live("click", function(e){
                 if ($('.git_area #check_all').attr("checked") == "checked") {

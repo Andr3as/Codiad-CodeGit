@@ -52,6 +52,9 @@
             case 'settings':
                 include('templates/settings.html');
                 break;
+            case 'generalSettings':
+                include('templates/generalSettings.php');
+                break;
             default:
                 echo "No page defined!";
                 break;
