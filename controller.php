@@ -298,14 +298,18 @@
             break;
             
         case 'getSettings':
-            $settings = $git->getSettings();
-            echo '{"status":"success","data":'. json_encode($settings) .'}';
+            if (isset($_GET['path'])) {
+                $settings = $git->getSettings(getWorkspacePath($_GET['path']));
+                echo '{"status":"success","data":'. json_encode($settings) .'}';
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
             break;
             
         case 'setSettings':
-            if (isset($_POST['username']) && isset($_POST['email'])) {
-                $settings = array('username' => $_POST['username'], 'email' => $_POST['email']);
-                saveJSON(CONFIG, $settings, 'config');
+            if (isset($_POST['settings']) && isset($_GET['path'])) {
+                $settings = json_decode($_POST['settings'], true);
+                $git->setSettings($settings, getWorkspacePath($_GET['path']));
                 echo '{"status":"success","message":"Settings saved"}';
             } else {
                 echo '{"status":"error","message":"Missing parameter!"}';

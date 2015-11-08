@@ -152,13 +152,13 @@
         
         showCommitDialog: function(path) {
             var _this = this;
-            $.getJSON(this.path + 'controller.php?action=getSettings', function(data){
+            path      = _this.getPath(path);
+            $.getJSON(this.path + 'controller.php?action=getSettings&path=' + path, function(data){
                 if (data.status == "success") {
                     if (data.data.email === ""){
                         codiad.message.notice("Please tell git who you are:");
                         _this.showDialog('settings', _this.location);
                     } else {
-                        path = _this.getPath(path);
                         var files = [], line = 0, file = "";
                         $('.git_area .git_list input:checkbox[checked="checked"]').each(function(i, item){
                             line = $(item).attr('data-line');
@@ -608,25 +608,41 @@
         
         login: function(){},
         
-        setSettings: function() {
-            var _this       = this;
-            var username    = $('.git_settings_area #username').val();
-            var email       = $('.git_settings_area #email').val();
-            $.post(this.path + 'controller.php?action=setSettings', {username: username, email: email}, function(result){
+        setSettings: function(path) {
+            var _this    = this;
+            var settings = {};
+            path = this.getPath(path);
+            $('.git_settings_area input:not(.no_setting)').each(function(i, el){
+                settings[$(el).attr("id")] = $(el).val();
+            });
+            
+            $.post(this.path + 'controller.php?action=setSettings&path='+path, {settings: JSON.stringify(settings)}, function(result){
                 result = JSON.parse(result);
                 codiad.message[result.status](result.message);
                 _this.showDialog('overview', _this.location);
             });
         },
         
-        getSettings: function() {
-            $.getJSON(this.path + 'controller.php?action=getSettings', function(result){
+        getSettings: function(path) {
+            path = this.getPath(path);
+            $.getJSON(this.path + 'controller.php?action=getSettings&path=' + path, function(result){
                 if (result.status == 'error') {
                     codiad.message.error(result.message);
                     return;
                 }
-                $('.git_settings_area #username').val(result.data.username);
-                $('.git_settings_area #email').val(result.data.email);
+                var local = false;
+                $.each(result.data, function(i, item){
+                    if (/\//.test(i)) {
+                        return;
+                    }
+                    $('.git_settings_area #' + i).val(item);
+                    if (/^local_/.test(i)) {
+                        local = true;
+                    }
+                });
+                if (!local) {
+                    $('#box_local').click();
+                }
             });
         },
         
