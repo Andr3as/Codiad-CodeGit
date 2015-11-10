@@ -41,21 +41,21 @@
                         }
                     });
 
-										// clear an old poller
-										if (_this._poller) {
-					            clearInterval(_this._poller);
-											delete _this._poller;
-										}
-										
-									
+                    // clear an old poller
+                    if (_this._poller) {
+                      clearInterval(_this._poller);
+                      delete _this._poller;
+                    }
+                    
+
                   //Check if directories has git repo
                   if ($('#project-root').hasClass('repo') && _this.isEnabledRepoStatus()) {
-										// add a poller
-				            _this._poller = setInterval(function(){
-				                _this.repostat();
-				            }, 10000);
-				            _this.addStatusIcon();
-										// only show stat-wrapper if not configured
+                    // add a poller
+                    _this._poller = setInterval(function(){
+                        _this.repostat();
+                    }, 10000);
+                    _this.addStatusIcon();
+                    // only show stat-wrapper if not configured
                     _this.isEnabledWrapper() && $("#git-repo-stat-wrapper").show();
                     $("#git-repo-status-icon").show();
                     _this.repostat();
