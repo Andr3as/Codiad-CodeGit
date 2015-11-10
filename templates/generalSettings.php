@@ -10,7 +10,7 @@
                 Disable repo-wide status
             </td>
             <td>
-                <select class="setting" data-setting="codiad.plugin.codegit.disable">
+                <select class="setting" data-setting="codiad.plugin.codegit.disableRepoStatus">
                     <option value="true"><?php i18n("Yes"); ?></option>
                     <option value="false" selected><?php i18n("No"); ?></option>
                 </select>

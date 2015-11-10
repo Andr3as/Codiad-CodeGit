@@ -48,21 +48,6 @@
                     }
                     
 
-                  //Check if directories has git repo
-                  if ($('#project-root').hasClass('repo') && _this.isEnabledRepoStatus()) {
-                    // add a poller
-                    _this._poller = setInterval(function(){
-                        _this.repostat();
-                    }, 10000);
-                    _this.addStatusIcon();
-                    // only show stat-wrapper if not configured
-                    _this.isEnabledWrapper() && $("#git-repo-stat-wrapper").show();
-                    $("#git-repo-status-icon").show();
-                    _this.repostat();
-                  } else {
-                    $("#git-repo-stat-wrapper").hide();
-                    $("#git-repo-status-icon").hide();
-                  }
                 },0);
             });
             //Handle context-menu
@@ -113,7 +98,7 @@
             amplify.subscribe('active.onSave', function(path){
                 setTimeout(function(){
                     _this.numstat(path);
-		                _this.repostat();
+                    _this.repostat();
                 }, 50);
             });
             amplify.subscribe('active.onClose', function(path){
@@ -126,6 +111,7 @@
             });
             amplify.subscribe('settings.changed', function(){
               //React here on changed settings
+              _this.showRepoStatus();
             });
             //Live features
             $('.git_area #check_all').live("click", function(e){
@@ -172,7 +158,29 @@
                 _this.checkout(_this.files[0], _this.location);
                 _this.showDialog('overview', _this.location);
             });
+            
+            _this.showRepoStatus();
         },
+
+        //Check if directories has git repo
+        showRepoStatus: function () {
+          var _this = this;
+          if ($('#project-root').hasClass('repo') && _this.isEnabledRepoStatus()) {
+            // add a poller
+            _this._poller = setInterval(function(){
+                _this.repostat();
+            }, 10000);
+            _this.addStatusIcon();
+            // only show stat-wrapper if not configured
+            _this.isEnabledWrapper() && $("#git-repo-stat-wrapper").show();
+            $("#git-repo-status-icon").show();
+            _this.repostat();
+          } else {
+            $("#git-repo-stat-wrapper").hide();
+            $("#git-repo-status-icon").hide();
+          }
+        },
+
         
         showSidebarDialog: function() {
             if (!$('#project-root').hasClass('repo')) {
