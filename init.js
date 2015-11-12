@@ -207,7 +207,7 @@
                 if (data.status == "success") {
                     if (data.data.email === ""){
                         codiad.message.notice("Please tell git who you are:");
-                        _this.showDialog('settings', _this.location);
+                        _this.showDialog('userConfig', _this.location);
                     } else {
                         var files = [], line = 0, file = "";
                         $('.git_area .git_list input:checkbox[checked="checked"]').each(function(i, item){

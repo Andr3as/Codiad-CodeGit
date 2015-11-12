@@ -50,10 +50,10 @@
                 include('templates/remote.html');
                 break;
             case 'settings':
-                include('templates/settings.html');
+                include('templates/settings.php');
                 break;
-            case 'generalSettings':
-                include('templates/generalSettings.php');
+            case 'userConfig':
+                include('templates/userConfig.html');
                 break;
             default:
                 echo "No page defined!";
