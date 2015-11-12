@@ -40,6 +40,17 @@
                             });
                         }
                     });
+
+                    // Repo status
+                    _this.showRepoStatus();
+
+                    // clear an old poller
+                    if (_this._poller) {
+                      clearInterval(_this._poller);
+                      delete _this._poller;
+                    }
+                    
+
                 },0);
             });
             //Handle context-menu
@@ -74,21 +85,38 @@
             amplify.subscribe("context-menu.onHide", function(){
                 $('.code_git').remove();
             });
+            //repo status
+            $('#file-manager').before('<div id="git-repo-stat-wrapper" class="hidden">Commit Status: <span id="git-repo-stat"></span></div>');
+            _this.addStatusIcon();
+            // clicking on it brings up the commit box
+            $("#git-repo-stat-wrapper").click(function(){
+              codiad.CodeGit.showDialog('overview', codiad.project.getCurrent());
+            });
             //File stats
             $('#current-file').after('<div class="divider"></div><div id="git-stat"></div>');
             amplify.subscribe('active.onFocus', function(path){
                 _this.numstat(path);
+                _this.repostat();
             });
             amplify.subscribe('active.onSave', function(path){
                 setTimeout(function(){
                     _this.numstat(path);
+                    _this.repostat();
                 }, 50);
             });
             amplify.subscribe('active.onClose', function(path){
+                _this.repostat();
                 $('#git-stat').html("");
             });
             amplify.subscribe('active.onRemoveAll', function(){
+                _this.repostat();
                 $('#git-stat').html("");
+            });
+            amplify.subscribe('settings.changed', function(){
+                _this.showRepoStatus();
+            });
+            amplify.subscribe('settings.loaded', function(){
+                _this.showRepoStatus();
             });
             //Live features
             $('.git_area #check_all').live("click", function(e){
@@ -136,6 +164,30 @@
                 _this.showDialog('overview', _this.location);
             });
         },
+
+        //Check if directories has git repo
+        showRepoStatus: function () {
+            var _this = this;
+            if ($('#project-root').hasClass('repo') && _this.isEnabledRepoStatus()) {
+                // add a poller
+                _this._poller = setInterval(function(){
+                    _this.repostat();
+                }, 10000);
+                _this.addStatusIcon();
+                // only show stat-wrapper if not configured
+                if (_this.isEnabledWrapper()) {
+                    $("#git-repo-stat-wrapper").show();
+                } else {
+                    $("#git-repo-stat-wrapper").hide();
+                }
+                $("#git-repo-status-icon").show();
+                _this.repostat();
+            } else {
+                $("#git-repo-stat-wrapper").hide();
+                $("#git-repo-status-icon").hide();
+            }
+        },
+
         
         showSidebarDialog: function() {
             if (!$('#project-root').hasClass('repo')) {
@@ -152,13 +204,13 @@
         
         showCommitDialog: function(path) {
             var _this = this;
-            $.getJSON(this.path + 'controller.php?action=getSettings', function(data){
+            path      = _this.getPath(path);
+            $.getJSON(this.path + 'controller.php?action=getSettings&path=' + path, function(data){
                 if (data.status == "success") {
                     if (data.data.email === ""){
                         codiad.message.notice("Please tell git who you are:");
-                        _this.showDialog('settings', _this.location);
+                        _this.showDialog('userConfig', _this.location);
                     } else {
-                        path = _this.getPath(path);
                         var files = [], line = 0, file = "";
                         $('.git_area .git_list input:checkbox[checked="checked"]').each(function(i, item){
                             line = $(item).attr('data-line');
@@ -605,28 +657,73 @@
                 $('#git-stat').html(insert);
             });
         },
+
+        repostat: function() {
+            path = codiad.project.getCurrent();
+            $.getJSON(this.path + 'controller.php?action=status&path='+path, function(json){
+                var insert = "Unknown", cls = "";
+                if (json.status != "error") {
+                  var data    = json.data;
+                    if (data.added.length !== 0 ||
+                      data.deleted.length !== 0 ||
+                      data.modified.length !== 0 ||
+                      data.renamed.length !== 0) {
+                      insert = "Uncommitted";
+                      cls = "invalid";
+                    } else if (data.untracked.length !== 0) {
+                      insert = "Untracked";
+                      cls = "untracked";
+                    } else {
+                      insert = "Committed";
+                      cls = "valid";
+                    }
+                }
+                $('#git-repo-stat').html(insert);
+                $('#git-repo-stat-wrapper').removeClass("git-repo-stat-valid git-repo-stat-invalid git-repo-stat-untracked")
+                   .addClass("git-repo-stat-"+cls);
+                // show the icon
+                $("#git-repo-status-icon").removeClass("git-repo-icon-valid git-repo-icon-invalid git-repo-icon-untracked")
+                   .addClass("git-repo-icon-"+cls);
+            });
+        },
         
         login: function(){},
         
-        setSettings: function() {
-            var _this       = this;
-            var username    = $('.git_settings_area #username').val();
-            var email       = $('.git_settings_area #email').val();
-            $.post(this.path + 'controller.php?action=setSettings', {username: username, email: email}, function(result){
+        setSettings: function(path) {
+            var _this    = this;
+            var settings = {};
+            path = this.getPath(path);
+            $('.git_settings_area input:not(.no_setting)').each(function(i, el){
+                settings[$(el).attr("id")] = $(el).val();
+            });
+            
+            $.post(this.path + 'controller.php?action=setSettings&path='+path, {settings: JSON.stringify(settings)}, function(result){
                 result = JSON.parse(result);
                 codiad.message[result.status](result.message);
                 _this.showDialog('overview', _this.location);
             });
         },
         
-        getSettings: function() {
-            $.getJSON(this.path + 'controller.php?action=getSettings', function(result){
+        getSettings: function(path) {
+            path = this.getPath(path);
+            $.getJSON(this.path + 'controller.php?action=getSettings&path=' + path, function(result){
                 if (result.status == 'error') {
                     codiad.message.error(result.message);
                     return;
                 }
-                $('.git_settings_area #username').val(result.data.username);
-                $('.git_settings_area #email').val(result.data.email);
+                var local = false;
+                $.each(result.data, function(i, item){
+                    if (/\//.test(i)) {
+                        return;
+                    }
+                    $('.git_settings_area #' + i).val(item);
+                    if (/^local_/.test(i)) {
+                        local = true;
+                    }
+                });
+                if (!local) {
+                    $('#box_local').click();
+                }
             });
         },
         
@@ -673,6 +770,28 @@
         
         setBranch: function(branch) {
             $('.git_area .branch').text(branch);
+        },
+
+        addStatusIcon: function () {
+            if ($("span#git-repo-status-icon").length < 1) {
+                $('#file-manager #project-root').before('<span id="git-repo-status-icon" class="hidden uncommit"></span>');
+            }
+        },
+
+        isEnabledRepoStatus: function () {
+            var setting = localStorage.getItem('codiad.plugin.codegit.disableRepoStatus'), ret = true;
+            if (setting === "true") {
+                ret = false;
+            }
+            return(ret);
+        },
+
+        isEnabledWrapper: function () {
+            var setting = localStorage.getItem('codiad.plugin.codegit.disableHeader'), ret = true;
+            if (setting === "true") {
+                ret = false;
+            }
+            return(ret);
         }
     };
 })(this, jQuery);

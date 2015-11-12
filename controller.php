@@ -298,19 +298,23 @@
             break;
             
         case 'getSettings':
-            $settings = $git->getSettings();
-            echo '{"status":"success","data":'. json_encode($settings) .'}';
+            if (isset($_GET['path'])) {
+                $settings = $git->getSettings(getWorkspacePath($_GET['path']));
+                echo '{"status":"success","data":'. json_encode($settings) .'}';
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
             break;
             
         case 'setSettings':
-            if (isset($_POST['username']) && isset($_POST['email'])) {
-              // git the system-wide settings to determine whether or not to allow an override
-              $pluginSettings = getJSON('git.settings.php', 'config');
-                $settings = array(
-                  'username' => $pluginSettings['lockuser'] == "true" ? $_SESSION['user'] : $_POST['username'], 
-                  'email' => $_POST['email']
-                );
-                saveJSON(CONFIG, $settings, 'config');
+            if (isset($_POST['settings']) && isset($_GET['path'])) {
+                $pluginSettings = getJSON('git.settings.php', 'config');
+                $settings = json_decode($_POST['settings'], true);
+                if ($pluginSettings['lockuser'] == "true") {
+                  $settings['local_username'] = $_SESSION['user'];
+                  $settings['username'] = $_SESSION['user'];
+                }
+                $git->setSettings($settings, getWorkspacePath($_GET['path']));
                 echo '{"status":"success","message":"Settings saved"}';
             } else {
                 echo '{"status":"error","message":"Missing parameter!"}';

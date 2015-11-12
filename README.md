@@ -33,3 +33,10 @@ Check the [wiki](https://github.com/Andr3as/Codiad-CodeGit/wiki) or open an issu
 ##Example
 
 ![Example](http://andrano.de/Plugins/img/git.png "Example")
+
+## Contributing
+
+Contributions are always welcome.  
+
+####Formatting
+- Indentation: 4 Spaces
