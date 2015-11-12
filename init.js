@@ -41,6 +41,7 @@
                         }
                     });
 
+                    // Repo status
                     _this.showRepoStatus();
 
                     // clear an old poller
@@ -164,25 +165,25 @@
 
         //Check if directories has git repo
         showRepoStatus: function () {
-          var _this = this;
-          if ($('#project-root').hasClass('repo') && _this.isEnabledRepoStatus()) {
-            // add a poller
-            _this._poller = setInterval(function(){
+            var _this = this;
+            if ($('#project-root').hasClass('repo') && _this.isEnabledRepoStatus()) {
+                // add a poller
+                _this._poller = setInterval(function(){
+                    _this.repostat();
+                }, 10000);
+                _this.addStatusIcon();
+                // only show stat-wrapper if not configured
+                if (_this.isEnabledWrapper()) {
+                    $("#git-repo-stat-wrapper").show();
+                } else {
+                    $("#git-repo-stat-wrapper").hide();
+                }
+                $("#git-repo-status-icon").show();
                 _this.repostat();
-            }, 10000);
-            _this.addStatusIcon();
-            // only show stat-wrapper if not configured
-            if (_this.isEnabledWrapper()) {
-              $("#git-repo-stat-wrapper").show();
             } else {
-              $("#git-repo-stat-wrapper").hide();
+                $("#git-repo-stat-wrapper").hide();
+                $("#git-repo-status-icon").hide();
             }
-            $("#git-repo-status-icon").show();
-            _this.repostat();
-          } else {
-            $("#git-repo-stat-wrapper").hide();
-            $("#git-repo-status-icon").hide();
-          }
         },
 
         
@@ -770,25 +771,25 @@
         },
 
         addStatusIcon: function () {
-          if ($("span#git-repo-status-icon").length < 1) {
-            $('#file-manager #project-root').before('<span id="git-repo-status-icon" class="hidden uncommit"></span>');
-          }
+            if ($("span#git-repo-status-icon").length < 1) {
+                $('#file-manager #project-root').before('<span id="git-repo-status-icon" class="hidden uncommit"></span>');
+            }
         },
 
         isEnabledRepoStatus: function () {
-          var setting = localStorage.getItem('codiad.plugin.codegit.disableRepoStatus'), ret = true;
-          if (setting === "true") {
-              ret = false;
-          }
-          return(ret);
+            var setting = localStorage.getItem('codiad.plugin.codegit.disableRepoStatus'), ret = true;
+            if (setting === "true") {
+                ret = false;
+            }
+            return(ret);
         },
 
         isEnabledWrapper: function () {
-          var setting = localStorage.getItem('codiad.plugin.codegit.disableHeader'), ret = true;
-          if (setting === "true") {
-              ret = false;
-          }
-          return(ret);
+            var setting = localStorage.getItem('codiad.plugin.codegit.disableHeader'), ret = true;
+            if (setting === "true") {
+                ret = false;
+            }
+            return(ret);
         }
     };
 })(this, jQuery);
