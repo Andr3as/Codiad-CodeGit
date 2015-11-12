@@ -8,5 +8,10 @@
             "icon": "icon-flow-branch",
             "title": "CodeGit"
         }
-    ]
+    ],
+    "config": [{
+            "file": "dialog.php?action=generalSettings",
+            "icon": "icon-flow-branch",
+            "title": "CodeGit"
+    }]
 }]
