@@ -16,9 +16,6 @@ The standard installation works with Debian based systems, for other check the i
 
 - [FreeBSD](https://github.com/Andr3as/Codiad-CodeGit/wiki/FreeBSD-installation)
 
-### Disable
-To disable the repo-wide status setting, set the parameter `codiad.plugin.codegit.disableRepoStatus` to `"true"`. If you just wish to disable the header bar, set the parameter `codiad.plugin.codegit.disableHeader` to `"true"`.
-
 ##Problems?
 
 Check the [wiki](https://github.com/Andr3as/Codiad-CodeGit/wiki) or open an issue.
@@ -26,3 +23,10 @@ Check the [wiki](https://github.com/Andr3as/Codiad-CodeGit/wiki) or open an issu
 ##Example
 
 ![Example](http://andrano.de/Plugins/img/git.png "Example")
+
+## Contributing
+
+Contributions are always welcome.  
+
+####Formatting
+- Indentation: 4 Spaces
