@@ -41,6 +41,8 @@
                         }
                     });
 
+                    _this.showRepoStatus();
+
                     // clear an old poller
                     if (_this._poller) {
                       clearInterval(_this._poller);
@@ -158,8 +160,6 @@
                 _this.checkout(_this.files[0], _this.location);
                 _this.showDialog('overview', _this.location);
             });
-            
-            _this.showRepoStatus();
         },
 
         //Check if directories has git repo
@@ -172,7 +172,11 @@
             }, 10000);
             _this.addStatusIcon();
             // only show stat-wrapper if not configured
-            _this.isEnabledWrapper() && $("#git-repo-stat-wrapper").show();
+            if (_this.isEnabledWrapper()) {
+              $("#git-repo-stat-wrapper").show();
+            } else {
+              $("#git-repo-stat-wrapper").hide();
+            }
             $("#git-repo-status-icon").show();
             _this.repostat();
           } else {
