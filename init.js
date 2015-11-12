@@ -113,8 +113,10 @@
                 $('#git-stat').html("");
             });
             amplify.subscribe('settings.changed', function(){
-              //React here on changed settings
-              _this.showRepoStatus();
+                _this.showRepoStatus();
+            });
+            amplify.subscribe('settings.loaded', function(){
+                _this.showRepoStatus();
             });
             //Live features
             $('.git_area #check_all').live("click", function(e){
