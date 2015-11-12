@@ -41,6 +41,7 @@
                         }
                     });
 
+                    // Repo status
                     _this.showRepoStatus();
 
                     // clear an old poller
@@ -112,8 +113,10 @@
                 $('#git-stat').html("");
             });
             amplify.subscribe('settings.changed', function(){
-              //React here on changed settings
-              _this.showRepoStatus();
+                _this.showRepoStatus();
+            });
+            amplify.subscribe('settings.loaded', function(){
+                _this.showRepoStatus();
             });
             //Live features
             $('.git_area #check_all').live("click", function(e){
@@ -164,25 +167,25 @@
 
         //Check if directories has git repo
         showRepoStatus: function () {
-          var _this = this;
-          if ($('#project-root').hasClass('repo') && _this.isEnabledRepoStatus()) {
-            // add a poller
-            _this._poller = setInterval(function(){
+            var _this = this;
+            if ($('#project-root').hasClass('repo') && _this.isEnabledRepoStatus()) {
+                // add a poller
+                _this._poller = setInterval(function(){
+                    _this.repostat();
+                }, 10000);
+                _this.addStatusIcon();
+                // only show stat-wrapper if not configured
+                if (_this.isEnabledWrapper()) {
+                    $("#git-repo-stat-wrapper").show();
+                } else {
+                    $("#git-repo-stat-wrapper").hide();
+                }
+                $("#git-repo-status-icon").show();
                 _this.repostat();
-            }, 10000);
-            _this.addStatusIcon();
-            // only show stat-wrapper if not configured
-            if (_this.isEnabledWrapper()) {
-              $("#git-repo-stat-wrapper").show();
             } else {
-              $("#git-repo-stat-wrapper").hide();
+                $("#git-repo-stat-wrapper").hide();
+                $("#git-repo-status-icon").hide();
             }
-            $("#git-repo-status-icon").show();
-            _this.repostat();
-          } else {
-            $("#git-repo-stat-wrapper").hide();
-            $("#git-repo-status-icon").hide();
-          }
         },
 
         
@@ -206,7 +209,7 @@
                 if (data.status == "success") {
                     if (data.data.email === ""){
                         codiad.message.notice("Please tell git who you are:");
-                        _this.showDialog('settings', _this.location);
+                        _this.showDialog('userConfig', _this.location);
                     } else {
                         var files = [], line = 0, file = "";
                         $('.git_area .git_list input:checkbox[checked="checked"]').each(function(i, item){
@@ -770,25 +773,25 @@
         },
 
         addStatusIcon: function () {
-          if ($("span#git-repo-status-icon").length < 1) {
-            $('#file-manager #project-root').before('<span id="git-repo-status-icon" class="hidden uncommit"></span>');
-          }
+            if ($("span#git-repo-status-icon").length < 1) {
+                $('#file-manager #project-root').before('<span id="git-repo-status-icon" class="hidden uncommit"></span>');
+            }
         },
 
         isEnabledRepoStatus: function () {
-          var setting = localStorage.getItem('codiad.plugin.codegit.disableRepoStatus'), ret = true;
-          if (setting === "true") {
-              ret = false;
-          }
-          return(ret);
+            var setting = localStorage.getItem('codiad.plugin.codegit.disableRepoStatus'), ret = true;
+            if (setting === "true") {
+                ret = false;
+            }
+            return(ret);
         },
 
         isEnabledWrapper: function () {
-          var setting = localStorage.getItem('codiad.plugin.codegit.disableHeader'), ret = true;
-          if (setting === "true") {
-              ret = false;
-          }
-          return(ret);
+            var setting = localStorage.getItem('codiad.plugin.codegit.disableHeader'), ret = true;
+            if (setting === "true") {
+                ret = false;
+            }
+            return(ret);
         }
     };
 })(this, jQuery);
