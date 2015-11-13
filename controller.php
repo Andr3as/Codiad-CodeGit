@@ -308,12 +308,16 @@
             
         case 'setSettings':
             if (isset($_POST['settings']) && isset($_GET['path'])) {
-                $pluginSettings = getJSON('git.settings.php', 'config');
                 $settings = json_decode($_POST['settings'], true);
+                
+                $pluginSettings = getJSON('git.settings.php', 'config');
                 if ($pluginSettings['lockuser'] == "true") {
-                  $settings['local_username'] = $_SESSION['user'];
-                  $settings['username'] = $_SESSION['user'];
+                    $settings['username'] = $_SESSION['user'];
+                    if (strlen($settings['local_username']) != 0) {
+                        $settings['local_username'] = $_SESSION['user'];
+                    }
                 }
+                
                 $git->setSettings($settings, getWorkspacePath($_GET['path']));
                 echo '{"status":"success","message":"Settings saved"}';
             } else {
