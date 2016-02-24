@@ -792,6 +792,10 @@
                 ret = false;
             }
             return(ret);
+        },
+
+        suppressCommitDiff: function() {
+            return false || localStorage.getItem('codiad.plugin.codegit.suppressCommitDiff') == "true";
         }
     };
 })(this, jQuery);
