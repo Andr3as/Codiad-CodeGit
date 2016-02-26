@@ -84,7 +84,7 @@ cd "$path"
             }
             send "$passphrase\n"
         }
-        "Password for" {
+        "assword" {
             if { "$password" == 0 } {
                 set result 4
                 exit 4
