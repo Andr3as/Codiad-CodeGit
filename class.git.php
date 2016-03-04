@@ -17,7 +17,7 @@
             foreach(getConfig() as $name => $value) {
                 $result = $this->executeCommand("git config " . $name . " " . $value);
                 if ($result !== 0) {
-                    $log .= "Config failed: " . $name . " " . $value;
+                    $log .= "Config failed: " . $name . " " . $value . "\n";
                 }
             }
             file_put_contents("config.log", $log);
@@ -39,10 +39,13 @@
             if (!$this->checkExecutableFile()) {
                 return $this->returnMessage("error","Failed to change permissions of shell.sh");
             }
-            if (!$this->checkExpectExists()) {
-                return $this->returnMessage("error", "Please install expect!");
+            if (!$this->checkShellProgrammExists()) {
+                return $this->returnMessage("error", "Please install shell programm!");
             }
-            $command = './shell.sh -s "' . $path . '" -c "git clone ' . $repo . ' ./"';
+            
+            $programm = $this->getShellProgramm();
+            $command = $programm . ' -s "' . $path . '" -c "git clone ' . $repo . ' ./"';
+            
             if (isset($_POST['username'])) {
                 $command = $command . ' -u "' . $_POST['username'] . '"';
             }
@@ -296,10 +299,13 @@
             if (!$this->checkExecutableFile()) {
                 return $this->returnMessage("error","Failed to change permissions of shell.sh");
             }
-            if (!$this->checkExpectExists()) {
-                return $this->returnMessage("error", "Please install expect!");
+            if (!$this->checkShellProgrammExists()) {
+                return $this->returnMessage("error", "Please install shell programm!");
             }
-            $command = './shell.sh -s "' . $path . '" -c "git push ' . $remote . ' ' . $branch . '"';
+            
+            $programm = $this->getShellProgramm();
+            $command = $programm . ' -s "' . $path . '" -c "git push ' . $remote . ' ' . $branch . '"';
+            
             if (isset($_POST['username'])) {
                 $command = $command . ' -u "' . $_POST['username'] . '"';
             }
@@ -318,10 +324,13 @@
             if (!$this->checkExecutableFile()) {
                 return $this->returnMessage("error","Failed to change permissions of shell.sh");
             }
-            if (!$this->checkExpectExists()) {
-                return $this->returnMessage("error", "Please install expect!");
+            if (!$this->checkShellProgrammExists()) {
+                return $this->returnMessage("error", "Please install shell programm!");
             }
-            $command = './shell.sh -s "' . $path . '" -c "git pull ' . $remote . ' ' . $branch . '"';
+            
+            $programm = $this->getShellProgramm();
+            $command = $programm . ' -s "' . $path . '" -c "git pull ' . $remote . ' ' . $branch . '"';
+            
             if (isset($_POST['username'])) {
                 $command = $command . ' -u "' . $_POST['username'] . '"';
             }
@@ -468,19 +477,39 @@
         }
         
         private function checkExecutableFile() {
-            if (!is_executable ('shell.sh')) {
-                if (!chmod('shell.sh', 0755)) {
+            $programm = $this->getShellProgramm();
+            if (!is_executable ($programm)) {
+                if (!chmod($programm, 0755)) {
                     return false;
                 }
             }
             return true;
         }
         
-        private function checkExpectExists() {
-            if (`which expect`) {
-                return true;
-            } else {
-                return false;
+        private function checkShellProgrammExists() {
+            if (shellProgramm == "expect") {
+                if (`which expect`) {
+                    return true;
+                }
+            } else if (shellProgramm == "empty") {
+                if (`which empty`) {
+                    return true;
+                }
+            } else if (shellProgramm == "python") {
+                if (`which python` && `python ./scripts/python.py --test`) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        private function getShellProgramm() {
+            if (shellProgramm == "expect") {
+                return "./scripts/expect.sh";
+            } else if (shellProgramm == "empty") {
+                return "./scripts/empty.sh";
+            } else if (shellProgramm == "python") {
+                return "python ./scripts/python.py";
             }
         }
         
