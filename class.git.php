@@ -498,8 +498,11 @@
                     return true;
                 }
             } else if (shellProgramm == "python") {
-                if (`which python` && `python ./scripts/python.py --test`) {
-                    return true;
+                if (`which python`) {
+                    exec('python ./scripts/python.py --test',$output,$return_var);
+                    if ($return_var === 0) {
+                        return true;
+                    }
                 }
             }
             return false;
