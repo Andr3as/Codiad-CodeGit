@@ -478,9 +478,11 @@
         
         private function checkExecutableFile() {
             $programm = $this->getShellProgramm();
-            if (!is_executable ($programm)) {
-                if (!chmod($programm, 0755)) {
-                    return false;
+            if (shellProgramm == "expect" || shellProgramm == "empty") {
+                if (!is_executable ($programm)) {
+                    if (!chmod($programm, 0755)) {
+                        return false;
+                    }
                 }
             }
             return true;
