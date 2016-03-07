@@ -1,8 +1,8 @@
 <?php
 	/* Define authentication programm */
-	//define("shellProgramm","expect");
-	//define("shellProgramm","empty");
-	define("shellProgramm","python");
+	define("shellProgramm","expect");
+	//define("shellProgramm","empty"); //DO NOT USE, empty will be added in a future version
+	//define("shellProgramm","python");
 	
 	/* Add your git config here
 		Example:
