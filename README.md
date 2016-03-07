@@ -4,12 +4,14 @@ Git integration for Codiad
 
 ##Requirements
 - Git version: 1.7.2
-- Expect (sudo apt-get install expect or [http://expect.sourceforge.net/](http://expect.sourceforge.net/))
-  - Only required for clone, push and pull
+- Either one of the following for clone, push and pull
+  - Expect (Shell) (`sudo apt-get install expect` or [http://expect.sourceforge.net/](http://expect.sourceforge.net/))
+  - pexpect (Python) (`pip install pexpect`, [More details](https://github.com/pexpect/pexpect))
 
 ##Installation
 
 - Download the zip file and unzip it to your plugin folder.
+- Change if necessary the config in `config.php`, f.e. if you use pexpect
 
 ###Installation Guides
 The standard installation works with Debian based systems, for other check the installation guides:  
