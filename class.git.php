@@ -37,14 +37,14 @@
         public function cloneRepo($path, $repo) {
             if (!is_dir($path)) return $this->returnMessage("error", "Wrong path!");
             if (!$this->checkExecutableFile()) {
-                return $this->returnMessage("error","Failed to change permissions of shell.sh");
+                return $this->returnMessage("error","Failed to change permissions of shell program");
             }
-            if (!$this->checkShellProgrammExists()) {
-                return $this->returnMessage("error", "Please install shell programm!");
+            if (!$this->checkShellProgramExists()) {
+                return $this->returnMessage("error", "Please install shell program!");
             }
             
-            $programm = $this->getShellProgramm();
-            $command = $programm . ' -s "' . $path . '" -c "git clone ' . $repo . ' ./"';
+            $program = $this->getShellProgram();
+            $command = $program . ' -s "' . $path . '" -c "git clone ' . $repo . ' ./"';
             
             if (isset($_POST['username'])) {
                 $command = $command . ' -u "' . $_POST['username'] . '"';
@@ -297,14 +297,14 @@
         public function push($path, $remote, $branch) {
             if (!is_dir($path)) return $this->returnMessage("error", "Wrong path!");
             if (!$this->checkExecutableFile()) {
-                return $this->returnMessage("error","Failed to change permissions of shell.sh");
+                return $this->returnMessage("error","Failed to change permissions of shell program");
             }
-            if (!$this->checkShellProgrammExists()) {
-                return $this->returnMessage("error", "Please install shell programm!");
+            if (!$this->checkShellProgramExists()) {
+                return $this->returnMessage("error", "Please install shell program!");
             }
             
-            $programm = $this->getShellProgramm();
-            $command = $programm . ' -s "' . $path . '" -c "git push ' . $remote . ' ' . $branch . '"';
+            $program = $this->getShellProgram();
+            $command = $program . ' -s "' . $path . '" -c "git push ' . $remote . ' ' . $branch . '"';
             
             if (isset($_POST['username'])) {
                 $command = $command . ' -u "' . $_POST['username'] . '"';
@@ -322,14 +322,14 @@
         public function pull($path, $remote, $branch) {
             if (!is_dir($path)) return $this->returnMessage("error", "Wrong path!");
             if (!$this->checkExecutableFile()) {
-                return $this->returnMessage("error","Failed to change permissions of shell.sh");
+                return $this->returnMessage("error","Failed to change permissions of shell program");
             }
-            if (!$this->checkShellProgrammExists()) {
-                return $this->returnMessage("error", "Please install shell programm!");
+            if (!$this->checkShellProgramExists()) {
+                return $this->returnMessage("error", "Please install shell program!");
             }
             
-            $programm = $this->getShellProgramm();
-            $command = $programm . ' -s "' . $path . '" -c "git pull ' . $remote . ' ' . $branch . '"';
+            $program = $this->getShellProgram();
+            $command = $program . ' -s "' . $path . '" -c "git pull ' . $remote . ' ' . $branch . '"';
             
             if (isset($_POST['username'])) {
                 $command = $command . ' -u "' . $_POST['username'] . '"';
@@ -477,10 +477,10 @@
         }
         
         private function checkExecutableFile() {
-            $programm = $this->getShellProgramm();
-            if (shellProgramm == "expect" || shellProgramm == "empty") {
-                if (!is_executable ($programm)) {
-                    if (!chmod($programm, 0755)) {
+            $program = $this->getShellProgram();
+            if (shellProgram == "expect" || shellProgram == "empty") {
+                if (!is_executable ($program)) {
+                    if (!chmod($program, 0755)) {
                         return false;
                     }
                 }
@@ -488,16 +488,16 @@
             return true;
         }
         
-        private function checkShellProgrammExists() {
-            if (shellProgramm == "expect") {
+        private function checkShellProgramExists() {
+            if (shellProgram == "expect") {
                 if (`which expect`) {
                     return true;
                 }
-            } else if (shellProgramm == "empty") {
+            } else if (shellProgram == "empty") {
                 if (`which empty`) {
                     return true;
                 }
-            } else if (shellProgramm == "python") {
+            } else if (shellProgram == "python") {
                 if (`which python`) {
                     exec('python ./scripts/python.py --test',$output,$return_var);
                     if ($return_var === 0) {
@@ -508,12 +508,12 @@
             return false;
         }
         
-        private function getShellProgramm() {
-            if (shellProgramm == "expect") {
+        private function getShellProgram() {
+            if (shellProgram == "expect") {
                 return "./scripts/expect.sh";
-            } else if (shellProgramm == "empty") {
+            } else if (shellProgram == "empty") {
                 return "./scripts/empty.sh";
-            } else if (shellProgramm == "python") {
+            } else if (shellProgram == "python") {
                 return "python ./scripts/python.py";
             }
         }
