@@ -3,7 +3,7 @@
 Git integration for Codiad
 
 ##Requirements
-- Git version: 1.7.2
+- Git version: ≥1.7.2
 - Either one of the following for clone, push and pull
   - Expect (Shell) (`sudo apt-get install expect` or [http://expect.sourceforge.net/](http://expect.sourceforge.net/))
   - pexpect (Python) (`pip install pexpect`, [More details](https://github.com/pexpect/pexpect))
