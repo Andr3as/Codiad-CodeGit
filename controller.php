@@ -31,7 +31,7 @@
                 echo '{"status":"error","message":"Missing parameter!"}';
             }
             break;
-        
+            
         case 'init':
             if (isset($_GET['path'])) {
                 if ($git->init(getWorkspacePath($_GET['path']))) {
@@ -271,6 +271,14 @@
         case 'pull':
             if (isset($_GET['path']) && isset($_GET['remote']) && isset($_GET['branch'])) {
                 echo $git->pull(getWorkspacePath($_GET['path']), $_GET['remote'], $_GET['branch']);
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+        
+        case 'fetch':
+            if (isset($_GET['path'])) {
+                echo $git->fetch(getWorkspacePath($_GET['path']));
             } else {
                 echo '{"status":"error","message":"Missing parameter!"}';
             }

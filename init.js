@@ -401,6 +401,41 @@
             });
         },
         
+        fetch: function() {
+            var _this = this;
+            this.showDialog('overview', this.location);
+            $.getJSON(this.path + 'controller.php?action=fetch&path=' + this.location, function(result){
+                if (result.status == 'login_required') {
+                    codiad.message.error(result.message);
+                    _this.showDialog('login', _this.location);
+                    _this.login = function(){
+                        var username = $('.git_login_area #username').val();
+                        var password = $('.git_login_area #password').val();
+                        _this.showDialog('overview', _this.location);
+                        $.post(_this.path + 'controller.php?action=fetch&path=' + _this.location,
+                            {username: username, password: password}, function(result){
+                                result = JSON.parse(result);
+                                codiad.message[result.status](result.message);
+                            });
+                    };
+                } else if (result.status == 'passphrase_required') {
+                    codiad.message.error(result.message);
+                    _this.showDialog('passphrase', _this.location);
+                    _this.login = function() {
+                        var passphrase = $('.git_login_area #passphrase').val();
+                        _this.showDialog('overview', _this.location);
+                        $.post(_this.path + 'controller.php?action=fetch&path=' + _this.location,
+                            {passphrase: passphrase}, function(result){
+                                result = JSON.parse(result);
+                                codiad.message[result.status](result.message);
+                            });
+                    };
+                } else {
+                    codiad.message[result.status](result.message);
+                }
+            });
+        },
+        
         checkout: function(path, repo) {
             var result = confirm("Are you sure to undo the changes on: " + path);
             if (result) {

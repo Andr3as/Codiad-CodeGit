@@ -343,6 +343,31 @@
             $result = $this->executeCommand($command);
             return $this->parseShellResult($result, "Repository pulled!", "Failed to pull repo!");
         }
+                
+        public function fetch($path) {
+            if (!is_dir($path)) return $this->returnMessage("error", "Wrong path!");
+            if (!$this->checkExecutableFile()) {
+                return $this->returnMessage("error","Failed to change permissions of shell program");
+            }
+            if (!$this->checkShellProgramExists()) {
+                return $this->returnMessage("error", "Please install shell program!");
+            }
+            
+            $program = $this->getShellProgram();
+            $command = $program . ' -s "' . $path . '" -c "git fetch"';
+            
+            if (isset($_POST['username'])) {
+                $command = $command . ' -u "' . $_POST['username'] . '"';
+            }
+            if (isset($_POST['password'])) {
+                $command = $command . ' -p "' . $_POST['password'] . '"';
+            }
+            if (isset($_POST['passphrase'])) {
+                $command = $command . ' -k "' . $_POST['passphrase'] . '"';
+            }
+            $result = $this->executeCommand($command);
+            return $this->parseShellResult($result, "Repository fetched!", "Failed to fetch repo!");
+        }
         
         public function renameItem($path, $old_name, $new_name) {
             if (!is_dir($path)) return false;
