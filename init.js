@@ -671,11 +671,13 @@
         submodule: function(repo, dir, submodule) {
             var _this = this;
             repo = repo || this.location;
-            path = this.files[0] + dir;
-            console.log(repo, dir, submodule);
+            path = dir;
+            if (this.files[0] != "") {
+            	path = this.files[0] + "/" + dir;
+            }
+            _this.showDialog('overview', repo);
             $.getJSON(this.path + 'controller.php?action=submodule&repo='+repo+'&path='+path+'&submodule='+submodule, function(result){
                 codiad.message[result.status](result.message);
-                _this.showDialog('overview', repo);
                 if (result.status == 'success') {
                     codiad.filemanager.rescan(repo);
                 }
