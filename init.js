@@ -55,18 +55,30 @@
             });
             //Handle context-menu
             amplify.subscribe('context-menu.onShow', function(obj){
+                var path = $(obj.e.target).attr('data-path'),
+                    root = $('#project-root').attr('data-path'),
+                    counter = 0;
                 if ($(obj.e.target).hasClass('directory')) {
                     $('#context-menu').append('<hr class="directory-only code_git">');
                     if ($(obj.e.target).hasClass('repo')) {
                         $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.showDialog(\'overview\', $(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Open CodeGit</a>');
+                        $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.submoduleDialog(\'' + path + '\', $(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Add Submodule</a>');
                     } else {
                         $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.gitInit($(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Git Init</a>');
                         $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.clone($(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Git Clone</a>');
+                        
+                        //Git Submodule
+                        while (path != root) {
+                            path = _this.dirname(path);
+                            if ($('.directory[data-path="' + path + '"]').hasClass('repo')) {
+                                $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.submoduleDialog(\'' + path + '\', $(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Add Submodule</a>');
+                                break;
+                            }
+                            if (counter >= 10) break;
+                            counter++;
+                        }
                     }
                 } else {
-                    var path = $(obj.e.target).attr('data-path');
-                    var root = $('#project-root').attr('data-path');
-                    var counter = 0;
                     while (path != root) {
                         path = _this.dirname(path);
                         if ($('.directory[data-path="' + path + '"]').hasClass('repo')) {
@@ -642,6 +654,32 @@
                         }
                     });
                 });
+        },
+        
+        submoduleDialog: function(repo, path) {
+            this.location = repo;
+            if (repo === path) {
+                path = "";
+            } else {
+                path = path.replace(repo + "/", "");
+            }
+            this.files      = [];
+            this.files.push(path);
+            this.showDialog('submodule');
+        },
+        
+        submodule: function(repo, dir, submodule) {
+            var _this = this;
+            repo = repo || this.location;
+            path = this.files[0] + dir;
+            console.log(repo, dir, submodule);
+            $.getJSON(this.path + 'controller.php?action=submodule&repo='+repo+'&path='+path+'&submodule='+submodule, function(result){
+                codiad.message[result.status](result.message);
+                _this.showDialog('overview', repo);
+                if (result.status == 'success') {
+                    codiad.filemanager.rescan(repo);
+                }
+            });
         },
         
         numstat: function(path) {

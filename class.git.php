@@ -345,7 +345,7 @@
         }
         
         public function renameItem($path, $old_name, $new_name) {
-            if (!is_dir($path)) return false;
+            if (!is_dir($path)) return $this->returnMessage("error", "Wrong path!");
             chdir($path);
             if(!file_exists($new_path)){
                 $command = "git mv " . $old_name . " " . $new_name;
@@ -361,6 +361,18 @@
                 }
             }else{
                 return $this->returnMessage("error", "Path Already Exists");
+            }
+        }
+        
+        public function submodule($repo, $path, $submodule) {
+            if (!is_dir($repo)) return $this->returnMessage("error", "Wrong path!");
+            chdir($repo);
+            if (!is_dir($path)) {
+                $command = "git submodule add " . $submodule . " " . $path;
+                $result = $this->executeCommand($command);
+                return $this->parseShellResult($result, "Submodule created", "Failed to create submodule");
+            } else {
+                return $this->returnMessage("error", "Submodule directory exists already");
             }
         }
         
