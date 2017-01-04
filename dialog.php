@@ -40,6 +40,9 @@
             case 'renameRemote':
                 include('templates/renameRemote.html');
                 break;
+            case 'checkoutRemote':
+                include('templates/checkoutRemote.html');
+                break;
             case 'overview':
                 include('templates/overview.html');
                 break;

@@ -9,12 +9,17 @@
         <button onclick="codiad.CodeGit.removeRemote(); return false;">Remove</button>
         <button onclick="codiad.CodeGit.showDialog('newRemote', codiad.CodeGit.location); return false;">New</button>
         <button onclick="renameRemote(); return false;">Rename</button>
+        <button onclick="checkoutRemote(); return false;">Checkout</button>
     </footer>
     <script>
         codiad.CodeGit.getRemotes();
         function renameRemote() {
             codiad.CodeGit.name = $('#git_remotes').val();
             codiad.CodeGit.showDialog('renameRemote', codiad.CodeGit.location);
+        }
+        function checkoutRemote() {
+        	
+            codiad.CodeGit.showDialog('checkoutRemote', codiad.CodeGit.location);
         }
     </script>
 </div>
