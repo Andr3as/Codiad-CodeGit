@@ -354,8 +354,11 @@
             }
             
             $program = $this->getShellProgram();
-            $command = $program . ' -s "' . $path . '" -c "git fetch ' . $remote . '"';
-            
+            if($remote == 0){
+            	$command = $program . ' -s "' . $path . '" -c "git fetch"';
+            }else{
+            	$command = $program . ' -s "' . $path . '" -c "git fetch ' . $remote . '"';
+            }
             if (isset($_POST['username'])) {
                 $command = $command . ' -u "' . $_POST['username'] . '"';
             }

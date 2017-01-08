@@ -512,6 +512,7 @@
                     codiad.message.error(result.message);
                     return;
                 }
+                $('#git_remotes_fetch').append('<option value="0">&lt;default&gt;</option>');
                 $.each(result.data, function(i, item){
                     $('#git_remotes').append('<option value="'+i+'">'+i+'</option>');
                     $('#git_remotes_fetch').append('<option value="'+i+'">'+i+'</option>');
