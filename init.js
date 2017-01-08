@@ -403,8 +403,9 @@
         
         fetch: function() {
             var _this = this;
+            var remote = $('.git_fetch_area #git_remotes_fetch').val();
             this.showDialog('overview', this.location);
-            $.getJSON(this.path + 'controller.php?action=fetch&path=' + this.location, function(result){
+            $.getJSON(this.path + 'controller.php?action=fetch&path=' + this.location + '&remote=' + remote, function(result){
                 if (result.status == 'login_required') {
                     codiad.message.error(result.message);
                     _this.showDialog('login', _this.location);
@@ -412,7 +413,7 @@
                         var username = $('.git_login_area #username').val();
                         var password = $('.git_login_area #password').val();
                         _this.showDialog('overview', _this.location);
-                        $.post(_this.path + 'controller.php?action=fetch&path=' + _this.location,
+                        $.post(_this.path + 'controller.php?action=fetch&path=' + _this.location + '&remote=' + remote,
                             {username: username, password: password}, function(result){
                                 result = JSON.parse(result);
                                 codiad.message[result.status](result.message);
@@ -424,7 +425,7 @@
                     _this.login = function() {
                         var passphrase = $('.git_login_area #passphrase').val();
                         _this.showDialog('overview', _this.location);
-                        $.post(_this.path + 'controller.php?action=fetch&path=' + _this.location,
+                        $.post(_this.path + 'controller.php?action=fetch&path=' + _this.location + '&remote=' + remote,
                             {passphrase: passphrase}, function(result){
                                 result = JSON.parse(result);
                                 codiad.message[result.status](result.message);
@@ -513,6 +514,7 @@
                 }
                 $.each(result.data, function(i, item){
                     $('#git_remotes').append('<option value="'+i+'">'+i+'</option>');
+                    $('#git_remotes_fetch').append('<option value="'+i+'">'+i+'</option>');
                 });
                 $.each(result.data, function(i, item){
                     $('.git_remote_info').html(item);
@@ -520,6 +522,7 @@
                 });
                 $('#git_remotes').live('change', function(){
                     var value = $('#git_remotes').val();
+                    var value = $('#git_remotes_fetch').val();
                     $('.git_remote_info').html(result.data[value]);
                 });
             });

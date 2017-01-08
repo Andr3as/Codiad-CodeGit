@@ -344,7 +344,7 @@
             return $this->parseShellResult($result, "Repository pulled!", "Failed to pull repo!");
         }
                 
-        public function fetch($path) {
+        public function fetch($path, $remote) {
             if (!is_dir($path)) return $this->returnMessage("error", "Wrong path!");
             if (!$this->checkExecutableFile()) {
                 return $this->returnMessage("error","Failed to change permissions of shell program");
@@ -354,7 +354,7 @@
             }
             
             $program = $this->getShellProgram();
-            $command = $program . ' -s "' . $path . '" -c "git fetch"';
+            $command = $program . ' -s "' . $path . '" -c "git fetch ' . $remote . '"';
             
             if (isset($_POST['username'])) {
                 $command = $command . ' -u "' . $_POST['username'] . '"';
