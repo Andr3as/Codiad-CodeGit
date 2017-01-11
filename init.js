@@ -677,9 +677,42 @@
             }
             _this.showDialog('overview', repo);
             $.getJSON(this.path + 'controller.php?action=submodule&repo='+repo+'&path='+path+'&submodule='+submodule, function(result){
-                codiad.message[result.status](result.message);
-                if (result.status == 'success') {
-                    codiad.filemanager.rescan(repo);
+                if (result.status == 'login_required') {
+                    codiad.message.error(result.message);
+                    _this.showDialog('login', _this.location);
+                    _this.login = function(){
+                        var username = $('.git_login_area #username').val();
+                        var password = $('.git_login_area #password').val();
+                        _this.showDialog('overview', _this.location);
+                        $.post(_this.path + 'controller.php?action=submodule&repo='+repo+'&path='+path+'&submodule='+submodule,
+                            {username: username, password: password}, function(result){
+                                result = JSON.parse(result);
+                                codiad.message[result.status](result.message);
+                                if (result.status == 'success') {
+                                    codiad.filemanager.rescan(repo);
+                                }
+                            });
+                    };
+                } else if (result.status == 'passphrase_required') {
+                    codiad.message.error(result.message);
+                    _this.showDialog('passphrase', _this.location);
+                    _this.login = function() {
+                        var passphrase = $('.git_login_area #passphrase').val();
+                        _this.showDialog('overview', _this.location);
+                        $.post(_this.path + 'controller.php?action=submodule&repo='+repo+'&path='+path+'&submodule='+submodule,
+                            {passphrase: passphrase}, function(result){
+                                result = JSON.parse(result);
+                                codiad.message[result.status](result.message);
+                                if (result.status == 'success') {
+                                    codiad.filemanager.rescan(repo);
+                                }
+                            });
+                    };
+                } else {
+                    codiad.message[result.status](result.message);
+                    if (result.status == 'success') {
+                        codiad.filemanager.rescan(repo);
+                    }
                 }
             });
         },

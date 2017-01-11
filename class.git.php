@@ -366,9 +366,26 @@
         
         public function submodule($repo, $path, $submodule) {
             if (!is_dir($repo)) return $this->returnMessage("error", "Wrong path!");
-            chdir($repo);
             if (!is_dir($path)) {
-                $command = "git submodule add " . $submodule . " " . $path;
+                if (!$this->checkExecutableFile()) {
+                    return $this->returnMessage("error","Failed to change permissions of shell program");
+                }
+                if (!$this->checkShellProgramExists()) {
+                    return $this->returnMessage("error", "Please install shell program!");
+                }
+                
+                $program = $this->getShellProgram();
+                $command = $program . ' -s "' . $repo . '" -c "git submodule add ' . $submodule . ' ' . $path . '"';
+                
+                if (isset($_POST['username'])) {
+                    $command = $command . ' -u "' . $_POST['username'] . '"';
+                }
+                if (isset($_POST['password'])) {
+                    $command = $command . ' -p "' . $_POST['password'] . '"';
+                }
+                if (isset($_POST['passphrase'])) {
+                    $command = $command . ' -k "' . $_POST['passphrase'] . '"';
+                }
                 $result = $this->executeCommand($command);
                 return $this->parseShellResult($result, "Submodule created", "Failed to create submodule");
             } else {
