@@ -45,8 +45,8 @@
             break;
             
         case 'clone':
-            if (isset($_GET['path']) && isset($_GET['repo'])) {
-                echo $git->cloneRepo(getWorkspacePath($_GET['path']), $_GET['repo']);
+            if (isset($_GET['path']) && isset($_GET['repo']) && isset($_GET['init_submodules'])) {
+                echo $git->cloneRepo(getWorkspacePath($_GET['path']), $_GET['repo'], $_GET['init_submodules']);
             } else {
                 echo '{"status":"error","message":"Missing parameter!"}';
             }

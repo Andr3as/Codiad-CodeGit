@@ -248,13 +248,21 @@
             });
         },
         
-        clone: function(path, repo) {
+        /**
+         * Clone repo or show dialog to clone repo
+         * 
+         * @param {string} path
+         * @param {string} repo
+         * @param {boolean} init_submodules
+         */
+        clone: function(path, repo, init_submodules) {
             var _this = this;
+            init_submodules = init_submodules || "false";
             if (typeof(repo) == 'undefined') {
                 this.showDialog('clone', path);
             } else {
                 codiad.modal.unload();
-                $.getJSON(_this.path + 'controller.php?action=clone&path=' + path + '&repo=' + repo, function(result){
+                $.getJSON(_this.path + 'controller.php?action=clone&path=' + path + '&repo=' + repo + '&init_submodules=' + init_submodules, function(result){
                     if (result.status == 'login_required') {
                         codiad.message.error(result.message);
                         _this.showDialog('login', _this.location);
@@ -262,7 +270,7 @@
                             var username = $('.git_login_area #username').val();
                             var password = $('.git_login_area #password').val();
                             codiad.modal.unload();
-                            $.post(_this.path + 'controller.php?action=clone&path='+path+'&repo=' + repo, {username: username, password: password},
+                            $.post(_this.path + 'controller.php?action=clone&path='+path+'&repo=' + repo + '&init_submodules=' + init_submodules, {username: username, password: password},
                                 function(result){
                                     result = JSON.parse(result);
                                     codiad.message[result.status](result.message);

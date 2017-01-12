@@ -34,7 +34,7 @@
             }
         }
         
-        public function cloneRepo($path, $repo) {
+        public function cloneRepo($path, $repo, $init_submodules) {
             if (!is_dir($path)) return $this->returnMessage("error", "Wrong path!");
             if (!$this->checkExecutableFile()) {
                 return $this->returnMessage("error","Failed to change permissions of shell program");
@@ -44,7 +44,13 @@
             }
             
             $program = $this->getShellProgram();
-            $command = $program . ' -s "' . $path . '" -c "git clone ' . $repo . ' ./"';
+            $command = $program . ' -s "' . $path . '" -c "git clone '; 
+            
+            if ($init_submodules == "true") {
+                $command = $command . '--recursive ';
+            }
+            
+            $command = $command . $repo . ' ./"';
             
             if (isset($_POST['username'])) {
                 $command = $command . ' -u "' . $_POST['username'] . '"';
