@@ -354,7 +354,7 @@
             }
             
             $program = $this->getShellProgram();
-            if($remote == 0){
+            if($remote == "0"){
             	$command = $program . ' -s "' . $path . '" -c "git fetch"';
             }else{
             	$command = $program . ' -s "' . $path . '" -c "git fetch ' . $remote . '"';

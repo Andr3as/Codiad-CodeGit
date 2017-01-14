@@ -278,7 +278,7 @@
         
         case 'fetch':
             if (isset($_GET['path']) && isset($_GET['remote'])) {
-                echo $git->fetch(getWorkspacePath($_GET['path'], $_GET['remote']));
+                echo $git->fetch(getWorkspacePath($_GET['path']), $_GET['remote']);
             } else {
                 echo '{"status":"error","message":"Missing parameter!"}';
             }
