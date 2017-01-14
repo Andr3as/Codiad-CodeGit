@@ -401,9 +401,13 @@
             });
         },
         
-        fetch: function() {
+        fetch: function(is_specific) {
             var _this = this;
-            var remote = $('.git_fetch_area #git_remotes_fetch').val();
+            if(is_specific){
+                var remote = $('.git_remote_area #git_remotes').val();
+            }else{
+            	var remote = "0";
+            }
             this.showDialog('overview', this.location);
             $.getJSON(this.path + 'controller.php?action=fetch&path=' + this.location + '&remote=' + remote, function(result){
                 if (result.status == 'login_required') {
@@ -512,10 +516,8 @@
                     codiad.message.error(result.message);
                     return;
                 }
-                $('#git_remotes_fetch').append('<option value="0">&lt;default&gt;</option>');
                 $.each(result.data, function(i, item){
                     $('#git_remotes').append('<option value="'+i+'">'+i+'</option>');
-                    $('#git_remotes_fetch').append('<option value="'+i+'">'+i+'</option>');
                 });
                 $.each(result.data, function(i, item){
                     $('.git_remote_info').html(item);
@@ -523,7 +525,6 @@
                 });
                 $('#git_remotes').live('change', function(){
                     var value = $('#git_remotes').val();
-                    var value = $('#git_remotes_fetch').val();
                     $('.git_remote_info').html(result.data[value]);
                 });
             });

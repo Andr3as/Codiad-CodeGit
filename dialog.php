@@ -19,9 +19,6 @@
             case 'diff':
                 include('templates/diff.html');
                 break;
-            case 'fetch':
-                include('templates/fetch.html');
-                break;
             case 'log':
                 include('templates/log.html');
                 break;

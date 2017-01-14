@@ -9,6 +9,7 @@
         <button onclick="codiad.CodeGit.removeRemote(); return false;">Remove</button>
         <button onclick="codiad.CodeGit.showDialog('newRemote', codiad.CodeGit.location); return false;">New</button>
         <button onclick="renameRemote(); return false;">Rename</button>
+        <button onclick="codiad.CodeGit.fetch(true); return false;">Fetch</button>
     </footer>
     <script>
         codiad.CodeGit.getRemotes();
