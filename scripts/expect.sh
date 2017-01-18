@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #Author: Andr3as
 #Last Edit: 11.09.14
 #Purpose: Handler for a git requests with authentification
