@@ -22,7 +22,7 @@
             }
             file_put_contents("config.log", $log);
         }
-        
+
         public function init($path) {
             if (!is_dir($path)) return false;
             chdir($path);
@@ -215,6 +215,18 @@
             }
         }
         
+        public function checkoutRemote($path, $name, $remoteName){
+            if (!is_dir($path)) return false;
+            chdir($path);
+            if (!$name) return false;
+            $result = $this->executeCommand("git checkout -b " . $name . " " . $remoteName);
+            if ($result !== 0) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        
         public function getBranches($path) {
             if (!is_dir($path)) return false;
             chdir($path);
@@ -239,6 +251,24 @@
             return array("branches" => $array, "current" => $current);
         }
         
+        public function getRemoteBranches($path){
+        	if (!is_dir($path)) return false;
+            chdir($path);
+            $current = "";
+            $result = $this->executeCommand("git branch -a");
+            foreach($this->resultArray as $index => $line) {
+            	if(strpos($line,'remotes/') !== false){
+            	    if(strpos($line,'/HEAD -> ') === false){
+            		    $line = str_replace("remotes/","", $line);
+                        $array[$index] = trim($line);
+            	    }else{
+            	        $current = trim(substr($line, strpos($line, '/HEAD -> ') + 8)); 
+            	    }
+            	}
+            }
+            return array("branches" => $array , "current" => $current);
+        }
+        
         public function newBranch($path, $name) {
             if (!is_dir($path)) return false;
             chdir($path);
@@ -253,6 +283,9 @@
         public function deleteBranch($path, $name) {
             if (!is_dir($path)) return false;
             chdir($path);
+            if (strpos($name,'remotes/') === 0){
+            	return false;
+            }
             $result = $this->executeCommand("git branch -d " . $name);
             if ($result !== 0) {
                 return false;
@@ -275,6 +308,9 @@
         public function renameBranch($path, $name, $newName) {
             if (!is_dir($path)) return false;
             chdir($path);
+            if (strpos($name,'remotes/') === 0){
+            	return false;
+            }
             $result = $this->executeCommand("git branch -m " . $name . " " . $newName);
             if ($result !== 0) {
                 return false;

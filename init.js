@@ -564,6 +564,31 @@
             this.showDialog('overview', this.location);
         },
         
+        getRemoteBranches: function(path){
+            path = this.getPath(path); 
+            $.getJSON(this.path + 'controller.php?action=getRemoteBranches&path=' + path, function(result){
+                if (result.status == 'error') {
+                    codiad.message.error(result.message);
+                    return;
+                }
+                $.each(result.data.branches, function(i, item){
+                    $('#git_remote_branches').append('<option value="'+item+'">'+item+'</option>');
+                });
+                $('#git_new_branch').val(result.data.current.substr(result.data.current.search('/') + 1));
+                $('#git_remote_branches').val(result.data.current);
+            });
+        },
+        
+        checkoutRemote: function(path){
+        	path           = this.getPath(path);
+        	var remoteName = $('#git_remote_branches').val();;
+        	var name       = $('#git_new_branch').val();
+    	    $.getJSON(this.path + 'controller.php?action=checkoutRemote&path=' + path + '&name=' + name + '&remoteName=' + remoteName, function(result){
+    		    codiad.message[result.status](result.message);
+    	    });
+    	    this.showDialog('remote', this.location);
+        },
+        
         getBranches: function(path) {
             path = this.getPath(path);
             $.getJSON(this.path + 'controller.php?action=getBranches&path=' + path, function(result){

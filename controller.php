@@ -181,6 +181,32 @@
                 echo '{"status":"error","message":"Missing parameter!"}';
             }
             break;
+        
+        case 'getRemoteBranches':
+        	if (isset($_GET['path'])) {
+                $result = $git->getRemoteBranches(getWorkspacePath($_GET['path']));
+                if ($result === false) {
+                    echo '{"status":"error","message":"Failed to get remote branches!"}';
+                } else {
+                    echo '{"status":"success","data":'. json_encode($result) .'}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+        
+        case 'checkoutRemote':
+            if (isset($_GET['path']) && isset($_GET['name']) && isset($_GET['remoteName'])) {
+                $result = $git->checkoutRemote(getWorkspacePath($_GET['path']), $_GET['name'], $_GET['remoteName']);
+                if ($result === false) {
+                    echo '{"status":"error","message":"Failed to checkout remote!"}';
+                } else {
+                    echo '{"status":"success","message":"Remote checkedout!"}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
             
         case 'getBranches':
             if (isset($_GET['path'])) {
