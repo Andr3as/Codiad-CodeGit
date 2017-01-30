@@ -411,7 +411,7 @@
         public function renameItem($path, $old_name, $new_name) {
             if (!is_dir($path)) return false;
             chdir($path);
-            if(!file_exists($new_path)){
+            if(!file_exists($new_name)){
                 $command = "git mv " . $old_name . " " . $new_name;
                 $result = $this->executeCommand($command);
                 if (strpos($this->result, "fatal: not under version control") !== false) {
@@ -424,7 +424,7 @@
                     return $this->parseShellResult($result, "Renamed", "Could Not Rename");
                 }
             }else{
-                return $this->returnMessage("error", "Path Already Exists");
+                return $this->returnMessage("error", "File Already Exists");
             }
         }
         

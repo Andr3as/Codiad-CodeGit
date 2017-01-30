@@ -703,6 +703,7 @@
                             // Change any active files
                             codiad.active.rename(fPath, newPath);
                         } else {
+                            codiad.message.error(data.message);
                             codiad.filemanager.renameNode(fPath);
                         }
                     });
