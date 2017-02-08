@@ -83,9 +83,8 @@
             if (!is_dir($path)) return false;
             chdir($path);
             if ($this->setGitSettings($path)) {
-            	$msg = utf8_decode($msg);
-            	$cmd = "git commit -m \"" . $msg . "\"";
-            	error_log($cmd);
+            	setlocale(LC_CTYPE, "en_US.UTF-8");
+            	error_log($msg);
                 $result = $this->executeCommand("git commit -m \"" . $msg . "\"");
                 return $this->parseShellResult($result, "Changes commited", "Failed to commit changes!");
             }
