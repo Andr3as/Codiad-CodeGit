@@ -83,7 +83,7 @@
             if (!is_dir($path)) return false;
             chdir($path);
             if ($this->setGitSettings($path)) {
-            	$locale = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+            	$locale = setlocale(LC_CTYPE, 0);
             	error_log($locale);
             	//setlocale(LC_CTYPE, "ru_RU.UTF-8");
                 $result = $this->executeCommand("git commit -m \"" . $msg . "\"");
