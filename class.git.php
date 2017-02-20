@@ -399,6 +399,31 @@
             }
         }
         
+        public function initSubmodule($path) {
+            if (!is_dir($path)) return $this->returnMessage("error", "Wrong path!");
+            if (!$this->checkExecutableFile()) {
+                return $this->returnMessage("error","Failed to change permissions of shell program");
+            }
+            if (!$this->checkShellProgramExists()) {
+                return $this->returnMessage("error", "Please install shell program!");
+            }
+            
+            $program = $this->getShellProgram();
+            $command = $program . ' -s "' . $path . '" -c "git submodule update --init"';
+            
+            if (isset($_POST['username'])) {
+                $command = $command . ' -u "' . $_POST['username'] . '"';
+            }
+            if (isset($_POST['password'])) {
+                $command = $command . ' -p "' . $_POST['password'] . '"';
+            }
+            if (isset($_POST['passphrase'])) {
+                $command = $command . ' -k "' . $_POST['passphrase'] . '"';
+            }
+            $result = $this->executeCommand($command);
+            return $this->parseShellResult($result, "Submodule initiated", "Failed to initiate submodule");
+        }
+        
         public function numstat($path) {
             if (file_exists($path)) {
                 $dirname    = dirname($path);

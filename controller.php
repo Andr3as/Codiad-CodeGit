@@ -292,6 +292,14 @@
             }
             break;
             
+        case 'initSubmodule':
+            if (isset($_GET['path'])) {
+                echo $git->initSubmodule(getWorkspacePath($_GET['path']));
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
         case 'numstat':
             if (isset($_GET['path'])) {
                 $result = $git->numstat(getWorkspacePath($_GET['path']));

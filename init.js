@@ -79,6 +79,7 @@
                         }
                     }
                 } else {
+                    var file = path;
                     while (path != root) {
                         path = _this.dirname(path);
                         if ($('.directory[data-path="' + path + '"]').hasClass('repo')) {
@@ -87,6 +88,10 @@
                             //Git rename
                             $('#context-menu a[onclick="codiad.filemanager.renameNode($(\'#context-menu\').attr(\'data-path\'));"]')
                                 .attr("onclick", "codiad.CodeGit.rename($(\'#context-menu\').attr(\'data-path\'))");
+                            //Init Submodules
+                            if (_this.basename(file) == '.gitmodules') {
+                                $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.initSubmodule(\'' + _this.dirname(file) + '\', $(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Init Submodule</a>');
+                            }
                             break;
                         }
                         if (counter >= 10) break;
@@ -723,6 +728,50 @@
                     }
                 }
             });
+        },
+        
+        initSubmodule: function(path) {
+            var _this = this;
+            path = path || this.location;
+            $.getJSON(this.path + 'controller.php?action=initSubmodule&path='+path, function(result){
+                if (result.status == 'login_required') {
+                    codiad.message.error(result.message);
+                    _this.showDialog('login', _this.location);
+                    _this.login = function(){
+                        var username = $('.git_login_area #username').val();
+                        var password = $('.git_login_area #password').val();
+                        _this.showDialog('overview', _this.location);
+                        $.post(_this.path + 'controller.php?action=initSubmodule&path='+path,
+                            {username: username, password: password}, function(result){
+                                result = JSON.parse(result);
+                                codiad.message[result.status](result.message);
+                                if (result.status == 'success') {
+                                    codiad.filemanager.rescan(path);
+                                }
+                            });
+                    };
+                } else if (result.status == 'passphrase_required') {
+                    codiad.message.error(result.message);
+                    _this.showDialog('passphrase', _this.location);
+                    _this.login = function() {
+                        var passphrase = $('.git_login_area #passphrase').val();
+                        _this.showDialog('overview', _this.location);
+                        $.post(_this.path + 'controller.php?action=initSubmodule&path='+path,
+                            {passphrase: passphrase}, function(result){
+                                result = JSON.parse(result);
+                                codiad.message[result.status](result.message);
+                                if (result.status == 'success') {
+                                    codiad.filemanager.rescan(path);
+                                }
+                            });
+                    };
+                } else {
+                    codiad.message[result.status](result.message);
+                    if (result.status == 'success') {
+                        codiad.filemanager.rescan(path);
+                    }
+                }
+            })
         },
         
         numstat: function(path) {
