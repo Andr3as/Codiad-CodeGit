@@ -142,6 +142,11 @@
                     }
                 }
             });
+            $('.commit_hash').live('click', function(){
+                var commit = $(this).text();
+                commit = commit.replace("commit", "").trim();
+                codiad.CodeGit.showCommit(codiad.CodeGit.location, commit);
+            });
             //Button Click listener
             $('.git_area .git_diff').live("click", function(e){
                 e.preventDefault();
@@ -278,18 +283,8 @@
                     _this.showDialog('overview', repo);
                     return;
                 }
-                $.each(result.data, function(i, item){
-                    item = item.replace(new RegExp('\t', 'g'), ' ')
-                                .replace(new RegExp(' ', 'g'), "&nbsp;")
-                                .replace(new RegExp('\n', 'g'), "<br>");
-                    if (item.indexOf('+') === 0 && item.indexOf('+++') !== 0) {
-                        $('.git_diff').append('<li class="plus">' + item + '</li>');
-                    } else if (item.indexOf('-') === 0 && item.indexOf('---') !== 0) {
-                        $('.git_diff').append('<li class="minus">' + item + '</li>');
-                    } else {
-                        $('.git_diff').append('<li>' + item + '</li>');
-                    }
-                });
+                result.data = _this.renderDiff(result.data);
+                $('.git_diff').append(result.data.join(""));
             });
         },
         
@@ -753,6 +748,21 @@
             });
         },
         
+        showCommit: function(path, commit) {
+            var _this = this;
+            path = this.getPath(path);
+            this.showDialog('showCommit', path);
+            $.getJSON(this.path + 'controller.php?action=showCommit&path=' + this.encode(path) + '&commit=' + commit, function(result){
+                $('.git_show_commit_area .hash').text(commit);
+                if (result.status != "success") {
+                    codiad.message.error(result.message);
+                    _this.showDialog('overview', path);
+                }
+                result.data = _this.renderDiff(result.data);
+                $('.git_show_commit_area .content ul').append(result.data.join(""));
+            });
+        },
+        
         login: function(){},
         
         setSettings: function(path) {
@@ -827,11 +837,53 @@
             return path.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
         },
         
+        /**
+         * Encode Uri component
+         * 
+         * @param {string} [string]
+         * @result {string} encoded string
+         */
+        encode: function(string) {
+            return encodeURIComponent(string);
+        },
+        
         addLine: function(status, name) {
             var line = this.line;
             var element = '<tr><td><input type="checkbox" data-line="'+line+'"></td><td class="'+status.toLowerCase()+'">'+status+'</td><td data-line="'+line+'" class="file">'+name+'</td><td><button class="git_button git_diff" data-line="'+line+'">Diff</button><button class="git_button git_undo" data-line="'+line+'">Undo changes</button></td></tr>';
             $('.git_list tbody').append(element);
             this.line++;
+        },
+        
+        /**
+         * Render git diff output
+         * 
+         * @param {Array} [array]
+         * @result {Array} Renderd output
+         */
+        renderDiff: function(array) {
+            var output = [], element, item;
+            for (var i = 0; i < array.length; i++) {
+                item = array[i];
+                element = item.replace(new RegExp('\t', 'g'), ' ')
+                            .replace(new RegExp(' ', 'g'), "&nbsp;")
+                            .replace(new RegExp('\n', 'g'), "<br>");
+                if (item.indexOf('+++') === 0 || item.indexOf('---') === 0 || /^index [0-9a-z]{7}..[0-9a-z]{7}/.test(item) || /^new file mode [0-9]{6}/.test(item)) {
+                    continue;
+                } else if (/^diff --git a\/.+ b\/.+/.test(item)) {
+                    element = item.match(/^diff --git a\/(.+) b\/.+/);
+                    element = '<li class="file-info">' + element[1] + '</li>';
+                } else if (/^@@ -[0-9,]+ \+[0-9,]+ @@/.test(item)) {
+                    element = '<li class="wrapper">' + element + '</li>';
+                } else if (item.indexOf('+') === 0 && item.indexOf('+++') !== 0) {
+                    element = '<li class="plus">' + element + '</li>';
+                } else if (item.indexOf('-') === 0 && item.indexOf('---') !== 0) {
+                    element = '<li class="minus">' + element + '</li>';
+                } else {
+                    element = '<li>' + element + '</li>';
+                }
+                output.push(element);
+            }
+            return output;
         },
         
         setBranch: function(branch) {

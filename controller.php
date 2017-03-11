@@ -331,6 +331,14 @@
             }
             break;
             
+        case 'showCommit':
+            if (isset($_GET['path']) && isset($_GET['commit'])) {
+                echo $git->showCommit(getWorkspacePath($_GET['path']), $_GET['commit']);
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
         case 'getSettings':
             if (isset($_GET['path'])) {
                 $settings = $git->getSettings(getWorkspacePath($_GET['path']));

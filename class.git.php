@@ -416,7 +416,7 @@
                 $result = $this->executeCommand($command);
                 if (strpos($this->result, "fatal: not under version control") !== false) {
                     if (rename($old_name,$new_name)) {
-                        return $this->returnMessage("succes", "Renamed");
+                        return $this->returnMessage("success", "Renamed");
                     } else {
                         return $this->returnMessage("error", "Could Not Rename");
                     }
@@ -466,6 +466,21 @@
                 echo json_encode($result);
             } else {
                 return $this->returnMessage("error", "File Does Not Exist");
+            }
+        }
+        
+        public function showCommit($path, $commit) {
+            if (!is_dir($path)) return false;
+            chdir($path);
+            $result = $this->executeCommand("git show " . $commit);
+            if ($result !== 0) {
+                return $this->returnMessage("error", "Failed to show commit");
+            } else {
+                foreach($this->resultArray as $index => $line) {
+                    $line = str_replace ("\t", "    ", $line);
+                    $this->resultArray[$index] = htmlentities($line);
+                }
+                return json_encode(array("status" => "success", "data" => $this->resultArray));
             }
         }
         
