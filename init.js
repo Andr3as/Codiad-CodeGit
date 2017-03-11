@@ -72,6 +72,8 @@
                         if ($('.directory[data-path="' + path + '"]').hasClass('repo')) {
                             $('#context-menu').append('<hr class="file-only code_git">');
                             $('#context-menu').append('<a class="file-only code_git" onclick="codiad.CodeGit.contextMenuDiff($(\'#context-menu\').attr(\'data-path\'), \''+path+'\');"><span class="icon-flow-branch"></span>Git Diff</a>');
+                            $('#context-menu').append('<a class="file-only code_git" onclick="codiad.CodeGit.blame($(\'#context-menu\').attr(\'data-path\'), \''+path+'\');"><span class="icon-flow-branch"></span>Git Blame</a>');
+                            $('#context-menu').append('<a class="file-only code_git" onclick="codiad.CodeGit.history($(\'#context-menu\').attr(\'data-path\'), \''+path+'\');"><span class="icon-flow-branch"></span>Git History</a>');
                             //Git rename
                             $('#context-menu a[onclick="codiad.filemanager.renameNode($(\'#context-menu\').attr(\'data-path\'));"]')
                                 .attr("onclick", "codiad.CodeGit.rename($(\'#context-menu\').attr(\'data-path\'))");
@@ -143,7 +145,12 @@
                 }
             });
             $('.commit_hash').live('click', function(){
-                var commit = $(this).text();
+                var commit;
+                if (typeof($(this).attr('data-hash')) != 'undefined') {
+                    commit = $(this).attr('data-hash');
+                } else {
+                    commit = $(this).text();
+                }
                 commit = commit.replace("commit", "").trim();
                 codiad.CodeGit.showCommit(codiad.CodeGit.location, commit);
             });
@@ -486,9 +493,17 @@
             });
         },
         
-        log: function(path) {
-            path = this.getPath(path);
-            $.getJSON(this.path + 'controller.php?action=log&path=' + path, function(result){
+        log: function(repo, path) {
+            repo = this.getPath(repo);
+            var component = "";
+            if (typeof(path) !== 'undefined') {
+                component = '&path=' + this.encode(path);
+                $('.git_log_area .path').text(path);
+            } else if (this.files.length !== 0) {
+                component = '&path=' + this.encode(this.files[0]);
+                $('.git_log_area .path').text(this.files[0]);
+            }
+            $.getJSON(this.path + 'controller.php?action=log&repo=' + this.encode(repo) + component, function(result){
                 if (result.status == 'error') {
                     codiad.message.error(result.message);
                     return;
@@ -761,6 +776,75 @@
                 result.data = _this.renderDiff(result.data);
                 $('.git_show_commit_area .content ul').append(result.data.join(""));
             });
+        },
+        
+        blame: function(path, repo) {
+            var _this = this;
+            this.location   = repo;
+            path            = path.replace(repo + "/", "");
+            this.showDialog('blame', repo);
+            $.getJSON(this.path + 'controller.php?action=blame&repo=' + this.encode(repo) + '&path=' + this.encode(path), function(result){
+                if (result.status != "success") {
+                    codiad.message.error(result.message);
+                    _this.showDialog('overview', repo);
+                }
+                $('.git_blame_area table thead th').text(path);
+                //Split blame output per file line
+                var hashRegExp = /^[a-z0-9]{40}/;
+                var data = result.data, starts, startIndexes = [], segments = [], s, e, i;
+                starts = data.filter(function(line){
+                    return hashRegExp.test(line);
+                });
+                for (i = 0; i < starts.length; i++) {
+                    startIndexes.push(data.indexOf(starts[i]));
+                }
+                for (i = 0; i < starts.length; i++) {
+                    s = startIndexes[i];
+                    e = (i < (starts.length - 1)) ? (startIndexes[i + 1]) : (data.length);
+                    segments.push(data.slice(s, e));
+                }
+                //Combine lines with the same commit
+                var hash = segments[0][0].match(hashRegExp)[0];
+                var unique = [{segment: segments[0], hash: hash, lines: [segments[0][12]]}];
+                for (i = 1; i < segments.length; i++) {
+                    if (hash === segments[i][0].match(hashRegExp)[0]) {
+                        //Same
+                        unique[unique.length - 1].lines.push(segments[i][12]);
+                    } else {
+                        hash = segments[i][0].match(hashRegExp)[0];
+                        //Next
+                        unique.push({segment: segments[i], hash: hash, lines: [segments[i][12]]});
+                    }
+                }
+                //Format output
+                var output = "", msg, date, name, line;
+                for (i = 0; i < unique.length; i++) {
+                    msg = unique[i].segment[9].replace("summary ", "");
+                    date = unique[i].segment[7].replace("committer-time ", "");
+                    date = new Date(date * 1000);
+                    date = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
+                    name = unique[i].segment[5].replace("committer ", "");
+                    hash = unique[i].hash;
+                    output += '<tr><td>' + msg + '<br>' + name + ': ' + date + '</td>';
+                    output += '<td class="commit_hash" data-hash="' + hash + '">' + hash.substr(0, 8) + '</td><td><ol>';  
+                    for (var j = 0; j < unique[i].lines.length; j++) {
+                        line = unique[i].lines[j].replace(new RegExp('\t', 'g'), ' ')
+                                                .replace(new RegExp(' ', 'g'), "&nbsp;")
+                                                .replace(new RegExp('\n', 'g'), "<br>");
+                        output += '<li>' + line + '</li>';
+                    }
+                    output += '</ol></td></tr>';
+                }
+                $('.git_blame_area table tbody').html(output);
+            });
+        },
+        
+        history: function(path, repo) {
+            this.location   = repo;
+            path            = path.replace(repo + "/", "");
+            this.files      = [];
+            this.files.push(path);
+            this.showDialog('log', repo);
         },
         
         login: function(){},

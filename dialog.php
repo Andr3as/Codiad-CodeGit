@@ -7,6 +7,9 @@
 <form>
     <?php
         switch($_GET['action']) {
+            case 'blame':
+                include('templates/blame.html');
+                break;
             case 'branches':
                 include('templates/branch.html');
                 break;

@@ -89,10 +89,14 @@
             return $this->parseShellResult(-1, null, "Failed to set settings!");
         }
         
-        public function getLog($path) {
-            if (!is_dir($path)) return false;
-            chdir($path);
-            $result = $this->executeCommand("git log");
+        public function getLog($repo) {
+            if (!is_dir($repo)) return false;
+            chdir($repo);
+            $cmd = "git log --relative-date ";
+            if (isset($_GET['path'])) {
+                $cmd .= " -- " . $_GET['path'];
+            }
+            $result = $this->executeCommand($cmd);
             if ($result !== 0) {
                 return false;
             }
@@ -475,6 +479,21 @@
             $result = $this->executeCommand("git show " . $commit);
             if ($result !== 0) {
                 return $this->returnMessage("error", "Failed to show commit");
+            } else {
+                foreach($this->resultArray as $index => $line) {
+                    $line = str_replace ("\t", "    ", $line);
+                    $this->resultArray[$index] = htmlentities($line);
+                }
+                return json_encode(array("status" => "success", "data" => $this->resultArray));
+            }
+        }
+        
+        public function blame($repo, $path) {
+            if (!is_dir($repo)) return false;
+            chdir($repo);
+            $result = $this->executeCommand("git blame --line-porcelain " . $path);
+            if ($result !== 0) {
+                return $this->returnMessage("error", "Failed to get git blame");
             } else {
                 foreach($this->resultArray as $index => $line) {
                     $line = str_replace ("\t", "    ", $line);

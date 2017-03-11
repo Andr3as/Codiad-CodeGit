@@ -89,6 +89,7 @@ h3 {
 .commit_hash {
     color: yellow;
     cursor: pointer;
+    margin-top: 5px;
     -webkit-user-select: none;
        -moz-user-select: none;
         -ms-user-select: none;
@@ -112,17 +113,30 @@ h3 {
 }
 
 /* Show commit */
-.git_show_commit_area .content {
+/* Git diff */
+.git_diff, .git_show_commit_area .content {
     max-height: 40vh;
     max-width: 800px;
     overflow: auto;
 }
 
-/* Git diff */
-.git_diff {
+/* Git Blame */
+.git_blame_area .content {
     max-height: 40vh;
-    max-width: 800px;
-    overflow: auto;
+    overflow-y: auto;
+}
+.git_blame_area table td:nth-of-type(1) {
+    width: 250px;
+}
+.git_blame_area table td:nth-of-type(2) {
+    width: 90px;
+}
+.git_blame_area table td:nth-of-type(3) {
+    max-width: 500px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
 }
 
 /* Git changes */

@@ -93,8 +93,8 @@
             break;
             
         case 'log':
-            if (isset($_GET['path'])) {
-                $result = $git->getLog(getWorkspacePath($_GET['path']));
+            if (isset($_GET['repo'])) {
+                $result = $git->getLog(getWorkspacePath($_GET['repo']));
                 if ($result === false) {
                     echo '{"status":"error","message":"Failed to get log!"}';
                 } else {
@@ -334,6 +334,19 @@
         case 'showCommit':
             if (isset($_GET['path']) && isset($_GET['commit'])) {
                 echo $git->showCommit(getWorkspacePath($_GET['path']), $_GET['commit']);
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
+        case 'blame':
+            if (isset($_GET['repo']) && isset($_GET['path'])) {
+                $result = $git->blame(getWorkspacePath($_GET['repo']), $_GET['path']);
+                if ($result === false) {
+                    echo '{"status":"error","message":"Failed to get diff!"}';
+                } else {
+                    echo $result;
+                }
             } else {
                 echo '{"status":"error","message":"Missing parameter!"}';
             }
