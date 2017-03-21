@@ -401,13 +401,9 @@
             });
         },
         
-        fetch: function(is_specific) {
+        fetch: function() {
             var _this = this;
-            if(is_specific){
-                var remote = $('.git_remote_area #git_remotes').val();
-            }else{
-            	var remote = "0";
-            }
+            var remote = $('.git_remote_area #git_remotes').val();
             this.showDialog('overview', this.location);
             $.getJSON(this.path + 'controller.php?action=fetch&path=' + this.location + '&remote=' + remote, function(result){
                 if (result.status == 'login_required') {
@@ -581,7 +577,7 @@
         
         checkoutRemote: function(path){
         	path           = this.getPath(path);
-        	var remoteName = $('#git_remote_branches').val();;
+        	var remoteName = $('#git_remote_branches').val();
         	var name       = $('#git_new_branch').val();
     	    $.getJSON(this.path + 'controller.php?action=checkoutRemote&path=' + path + '&name=' + name + '&remoteName=' + remoteName, function(result){
     		    codiad.message[result.status](result.message);
