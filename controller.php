@@ -352,6 +352,19 @@
             }
             break;
             
+        case 'network':
+            if (isset($_GET['path'])) {
+                $result = $git->network(getWorkspacePath($_GET['path']));
+                if ($result === false) {
+                    echo '{"status":"error","message":"Failed to get network!"}';
+                } else {
+                    echo '{"status":"success","data":'. json_encode($result) .'}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
         case 'getSettings':
             if (isset($_GET['path'])) {
                 $settings = $git->getSettings(getWorkspacePath($_GET['path']));

@@ -5,7 +5,7 @@
  * See http://opensource.org/licenses/MIT for more information. 
  * This information must remain intact.
  */
-   include_once('config.php');
+    include_once('config.php');
 
     class Git {
         
@@ -500,6 +500,173 @@
                     $this->resultArray[$index] = htmlentities($line);
                 }
                 return json_encode(array("status" => "success", "data" => $this->resultArray));
+            }
+        }
+        
+        public function network($repo) {
+            if (!is_dir($repo)) return false;
+            chdir($repo);
+            $cmds = array(
+                "git log --date-order --branches --pretty=format:%H%n%P%n%an%n%at%n%s",
+                "git show-ref --tags",
+                "git show-ref --heads",
+                "git rev-parse --abbrev-ref HEAD"
+            );
+            $results = array();
+            foreach($cmds as $cmd) {
+                $result = $this->executeCommand($cmd);
+                if ($result !== 0 && $result !== 1) { // Ignore unclean exit
+                    return false;
+                }
+                array_push($results, $this->resultArray);
+            }
+            $log = $results[0];
+            $tags = $results[1];
+            $heads = $results[2];
+            $branch = $results[3][0];
+            //Compute commits
+            $log = array_chunk($log, 5);
+            $this->commits = array();
+            $keys = array("hash", "parents", "author", "time", "subject");
+            $this->hash_to_commit = array();
+            foreach ($log as $i => $commit) {
+                $commit = array_combine($keys, $commit);
+                $commit['computed'] = false;
+                $commit['id'] = $i;
+                if (strlen($commit['parents']) !== 0) {
+                    $commit['parents'] = str_split(str_replace(" ", "", $commit['parents']), 40);
+                } else {
+                    $commit['parents'] = array();
+                }
+                array_push($this->commits, $commit);
+                $this->hash_to_id[$commit['hash']] = $i;
+            }
+            //Compute refs
+            $keys = array("hash", "name");
+            $branch_to_hash = array();
+            foreach($heads as $i => $ref) {
+                $ref = str_replace("refs/heads/", "", $ref);
+                $ref = str_replace(" ", "", $ref);
+                $ref = str_split($ref, 40);
+                $ref = array_combine($keys, $ref);
+                $heads[$i] = $ref;
+                $branch_to_hash[$ref['name']] = $ref['hash'];
+            }
+            foreach($tags as $i => $ref) {
+                $ref = str_replace("refs/tags/", "", $ref);
+                $ref = str_replace(" ", "", $ref);
+                $ref = str_split($ref, 40);
+                $ref = array_combine($keys, $ref);
+                $tags[$i] = $ref;
+            }
+            
+            //Line counter
+            $this->n_lines = 0;
+            $this->lineRanges = array();
+            //Walk line of current branch
+            $start = $branch_to_hash[$branch];
+            $this->walkLines($start, $this->n_lines, true);
+            //Walk lines of all branches
+            foreach($heads as $head) {
+                $this->walkLines($head['hash'], $this->n_lines, true);
+            }
+            
+            //Extend ranges with parent
+            foreach($this->lineRanges as $line => $range) {
+                $start_id = $range['start_id'];
+                $commit = $this->commits[$start_id];
+                if (count($commit['parents']) > 0) {
+                    $parent_hash = $commit['parents'][0];
+                    $parent_id = $this->hash_to_id[$parent_hash];
+                    $parent = $this->commits[$parent_id];
+                    $this->lineRanges[$line]['start'] = $parent['time'];
+                    $this->lineRanges[$line]['start_id'] = $parent_id;
+                }
+            }
+            
+            //Sort ranges
+            function sort_ranges_by_start($a, $b) {
+                return $a['start'] - $b['start'];
+            }
+            uasort($this->lineRanges, 'sort_ranges_by_start');
+            
+            $levels = array();
+            foreach($this->lineRanges as $line => $range) {
+                $merged = false;
+                foreach($levels as $index => $level) {
+                    if ($level['end'] < $range['start']) {
+                        array_push($levels[$index]['lines'], $line);
+                        $levels[$index]['end'] = $range['end'];
+                        $merged = true;
+                        break;
+                    }
+                }
+                
+                if (!$merged) {
+                    array_push($levels,array(
+                        'lines' => array($line),
+                        'start' => $range['start'],
+                        'end' => $range['end']
+                    ));
+                }
+            }
+            
+            foreach($levels as $index => $level) {
+                foreach($level['lines'] as $line) {
+                    $this->lineRanges[$line]['level'] = $index;
+                }
+            }
+            
+            foreach($this->commits as $id => $c) {
+                $this->commits[$id]['level'] = $this->lineRanges[$c['line']]['level'];
+            }
+            
+            //Return
+            return array('commits' => $this->commits, 'heads' => $heads, 'tags' => $tags, 'branch' => $branch, 'hash_to_id' => $this->hash_to_id, 'lines' => ++$this->n_lines);
+        }
+        
+        private function walkLines($hash, $line, $new_line) {
+            //Get commit id by given hash
+            $id = $this->hash_to_id[$hash];
+            if ($this->commits[$id]['computed']) {
+                return;
+            }
+            if ($new_line) {
+                $this->n_lines++;
+                $line = $this->n_lines;
+            }
+            $this->commits[$id]['line'] = $line;
+            $this->commits[$id]['computed'] = true;
+            
+            //Ranges of lines
+            $time = $this->commits[$id]['time'];
+            if (!isset($this->lineRanges[$line])) {
+                $this->lineRanges[$line] = array(
+                    'start' => $time,
+                    'start_id' => $id,
+                    'end' => $time,
+                    'end_id' => $id
+                );
+            } else {
+                
+                if ($time < $this->lineRanges[$line]['start']) {
+                    $this->lineRanges[$line]['start'] = $time;
+                    $this->lineRanges[$line]['start_id'] = $id;
+                }
+                if ($time > $this->lineRanges[$line]['end']) {
+                    $this->lineRanges[$line]['end'] = $time;
+                    $this->lineRanges[$line]['end_id'] = $id;
+                }
+            }
+            
+            foreach($this->commits[$id]['parents'] as $i => $parent) {
+                if ($i == 0) {
+                    //Same line
+                    $this->walkLines($parent, $line, false);
+                } else {
+                    //New line
+                    $this->walkLines($parent, $this->n_lines, true);
+                }
             }
         }
         

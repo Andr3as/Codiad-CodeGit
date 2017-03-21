@@ -22,9 +22,12 @@
         location: '',
         line    : 0,
         files   : [],
+        network_graph : {},
         
         init: function() {
             var _this = this;
+            $.getScript(this.path + "network_graph.js");
+            $.getScript(this.path + "raphael.min.js");
             //Check if directories has git repo
             amplify.subscribe('filemanager.onIndex', function(obj){
                 setTimeout(function(){
@@ -845,6 +848,16 @@
             this.files      = [];
             this.files.push(path);
             this.showDialog('log', repo);
+        },
+        
+        network: function(path) {
+            var _this = this;
+            path = this.getPath(path);
+            this.showDialog('network', path);
+            $.getJSON(this.path + 'controller.php?action=network&path=' + this.encode(path), function(result){
+                _this.network_graph.setData(result.data);
+                _this.network_graph.generate();
+            });
         },
         
         login: function(){},

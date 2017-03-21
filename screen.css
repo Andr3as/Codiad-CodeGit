@@ -112,6 +112,11 @@ h3 {
     vertical-align: top;
 }
 
+.git_network_area .content {
+    max-height: 40vh;
+    overflow: auto;
+}
+
 /* Show commit */
 /* Git diff */
 .git_diff, .git_show_commit_area .content {
