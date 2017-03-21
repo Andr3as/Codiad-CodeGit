@@ -462,6 +462,7 @@
         
         status: function(path) {
             path = this.getPath(path);
+            this.files = [];
             var _this = this;
             $.getJSON(this.path + 'controller.php?action=status&path=' + path, function(result){
                 if (result.status == 'error') {
@@ -967,7 +968,7 @@
                 if (item.indexOf('+++') === 0 || item.indexOf('---') === 0 || /^index [0-9a-z]{7}..[0-9a-z]{7}/.test(item) || /^new file mode [0-9]{6}/.test(item)) {
                     continue;
                 } else if (/^diff --git a\/.+ b\/.+/.test(item)) {
-                    element = item.match(/^diff --git a\/(.+) b\/.+/);
+                    element = item.match(/^diff --git a\/.+ b\/(.+)/);
                     element = '<li class="file-info">' + element[1] + '</li>';
                 } else if (/^@@ -[0-9,]+ \+[0-9,]+ @@/.test(item)) {
                     element = '<li class="wrapper">' + element + '</li>';

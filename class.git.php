@@ -918,7 +918,7 @@
                 }
             } else {
                 $this->executeCommand('cat ' . $path);
-                array_push($result, "+++ ". $path);
+                array_push($result, "diff --git a/". $path . " b/" . $path);
                 foreach($this->resultArray as $index => $line) {
                     array_push($result, "+" . $line);
                 }
