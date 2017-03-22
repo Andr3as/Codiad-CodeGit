@@ -7,6 +7,9 @@
 <form>
     <?php
         switch($_GET['action']) {
+            case 'blame':
+                include('templates/blame.html');
+                break;
             case 'branches':
                 include('templates/branch.html');
                 break;
@@ -31,6 +34,9 @@
             case 'newRemote':
                 include('templates/newRemote.html');
                 break;
+            case 'network':
+                include('templates/network.html');
+                break;
             case 'passphrase':
                 include('templates/passphrase.html');
                 break;
@@ -54,6 +60,9 @@
                 break;
             case 'settings':
                 include('templates/settings.php');
+                break;
+            case 'showCommit':
+                include('templates/showCommit.html');
                 break;
             case 'submodule':
                 include('templates/submodule.html');
