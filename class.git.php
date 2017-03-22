@@ -34,7 +34,7 @@
             }
         }
         
-        public function cloneRepo($path, $repo) {
+        public function cloneRepo($path, $repo, $init_submodules) {
             if (!is_dir($path)) return $this->returnMessage("error", "Wrong path!");
             if (!$this->checkExecutableFile()) {
                 return $this->returnMessage("error","Failed to change permissions of shell program");
@@ -44,7 +44,13 @@
             }
             
             $program = $this->getShellProgram();
-            $command = $program . ' -s "' . $path . '" -c "git clone ' . $repo . ' ./"';
+            $command = $program . ' -s "' . $path . '" -c "git clone '; 
+            
+            if ($init_submodules == "true") {
+                $command = $command . '--recursive ';
+            }
+            
+            $command = $command . $repo . ' ./"';
             
             if (isset($_POST['username'])) {
                 $command = $command . ' -u "' . $_POST['username'] . '"';
@@ -409,7 +415,7 @@
         }
         
         public function renameItem($path, $old_name, $new_name) {
-            if (!is_dir($path)) return false;
+            if (!is_dir($path)) return $this->returnMessage("error", "Wrong path!");
             chdir($path);
             if(!file_exists($new_name)){
                 $command = "git mv " . $old_name . " " . $new_name;
@@ -426,6 +432,60 @@
             }else{
                 return $this->returnMessage("error", "File Already Exists");
             }
+        }
+        
+        public function submodule($repo, $path, $submodule) {
+            if (!is_dir($repo)) return $this->returnMessage("error", "Wrong path!");
+            if (!is_dir($path)) {
+                if (!$this->checkExecutableFile()) {
+                    return $this->returnMessage("error","Failed to change permissions of shell program");
+                }
+                if (!$this->checkShellProgramExists()) {
+                    return $this->returnMessage("error", "Please install shell program!");
+                }
+                
+                $program = $this->getShellProgram();
+                $command = $program . ' -s "' . $repo . '" -c "git submodule add ' . $submodule . ' ' . $path . '"';
+                
+                if (isset($_POST['username'])) {
+                    $command = $command . ' -u "' . $_POST['username'] . '"';
+                }
+                if (isset($_POST['password'])) {
+                    $command = $command . ' -p "' . $_POST['password'] . '"';
+                }
+                if (isset($_POST['passphrase'])) {
+                    $command = $command . ' -k "' . $_POST['passphrase'] . '"';
+                }
+                $result = $this->executeCommand($command);
+                return $this->parseShellResult($result, "Submodule created", "Failed to create submodule");
+            } else {
+                return $this->returnMessage("error", "Submodule directory exists already");
+            }
+        }
+        
+        public function initSubmodule($path) {
+            if (!is_dir($path)) return $this->returnMessage("error", "Wrong path!");
+            if (!$this->checkExecutableFile()) {
+                return $this->returnMessage("error","Failed to change permissions of shell program");
+            }
+            if (!$this->checkShellProgramExists()) {
+                return $this->returnMessage("error", "Please install shell program!");
+            }
+            
+            $program = $this->getShellProgram();
+            $command = $program . ' -s "' . $path . '" -c "git submodule update --init"';
+            
+            if (isset($_POST['username'])) {
+                $command = $command . ' -u "' . $_POST['username'] . '"';
+            }
+            if (isset($_POST['password'])) {
+                $command = $command . ' -p "' . $_POST['password'] . '"';
+            }
+            if (isset($_POST['passphrase'])) {
+                $command = $command . ' -k "' . $_POST['passphrase'] . '"';
+            }
+            $result = $this->executeCommand($command);
+            return $this->parseShellResult($result, "Submodule initiated", "Failed to initiate submodule");
         }
         
         public function numstat($path) {

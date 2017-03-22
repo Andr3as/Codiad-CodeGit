@@ -1,5 +1,5 @@
 <div class="git_area">
-    <label>Status</label>
+    <label>Status: <span class="git_area_path"></span></label>
     <header>
         <input type="checkbox" id="check_all">
         <button onclick="codiad.CodeGit.status(); return false;"><i class="icon-arrows-ccw"></i></button>
@@ -26,5 +26,6 @@
     </footer>
     <script>
         codiad.CodeGit.status();
+        $('.git_area_path').text(codiad.CodeGit.location);
     </script>
 </div>

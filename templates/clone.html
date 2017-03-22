@@ -7,9 +7,18 @@
                     <input id="git_clone_repo">
                 </td>
             </tr>
+            <tr>
+                <td>
+                    Initialize submodules
+                    <select id="git_init_submodules">
+                        <option value="true" selected>Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </td>
+            </tr>
         </tbody>
     </table>
-    <button onclick="codiad.CodeGit.clone(codiad.CodeGit.location, $('#git_clone_repo').val()); return false;">Clone</button>
+    <button onclick="codiad.CodeGit.clone(codiad.CodeGit.location, $('#git_clone_repo').val(), $('#git_init_submodules').val()); return false;">Clone</button>
     <button onclick="codiad.modal.unload(); return false;">Cancel</button>
     <script>
         $('#git_clone_repo').focus();

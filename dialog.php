@@ -55,6 +55,9 @@
             case 'settings':
                 include('templates/settings.php');
                 break;
+            case 'submodule':
+                include('templates/submodule.html');
+                break;
             case 'userConfig':
                 include('templates/userConfig.html');
                 break;

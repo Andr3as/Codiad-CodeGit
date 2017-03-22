@@ -55,18 +55,31 @@
             });
             //Handle context-menu
             amplify.subscribe('context-menu.onShow', function(obj){
+                var path = $(obj.e.target).attr('data-path'),
+                    root = $('#project-root').attr('data-path'),
+                    counter = 0;
                 if ($(obj.e.target).hasClass('directory')) {
                     $('#context-menu').append('<hr class="directory-only code_git">');
                     if ($(obj.e.target).hasClass('repo')) {
                         $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.showDialog(\'overview\', $(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Open CodeGit</a>');
+                        $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.submoduleDialog(\'' + path + '\', $(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Add Submodule</a>');
                     } else {
                         $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.gitInit($(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Git Init</a>');
                         $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.clone($(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Git Clone</a>');
+                        
+                        //Git Submodule
+                        while (path != root) {
+                            path = _this.dirname(path);
+                            if ($('.directory[data-path="' + path + '"]').hasClass('repo')) {
+                                $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.submoduleDialog(\'' + path + '\', $(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Add Submodule</a>');
+                                break;
+                            }
+                            if (counter >= 10) break;
+                            counter++;
+                        }
                     }
                 } else {
-                    var path = $(obj.e.target).attr('data-path');
-                    var root = $('#project-root').attr('data-path');
-                    var counter = 0;
+                    var file = path;
                     while (path != root) {
                         path = _this.dirname(path);
                         if ($('.directory[data-path="' + path + '"]').hasClass('repo')) {
@@ -75,6 +88,10 @@
                             //Git rename
                             $('#context-menu a[onclick="codiad.filemanager.renameNode($(\'#context-menu\').attr(\'data-path\'));"]')
                                 .attr("onclick", "codiad.CodeGit.rename($(\'#context-menu\').attr(\'data-path\'))");
+                            //Init Submodules
+                            if (_this.basename(file) == '.gitmodules') {
+                                $('#context-menu').append('<a class="directory-only code_git" onclick="codiad.CodeGit.initSubmodule(\'' + _this.dirname(file) + '\', $(\'#context-menu\').attr(\'data-path\'));"><span class="icon-flow-branch"></span>Init Submodule</a>');
+                            }
                             break;
                         }
                         if (counter >= 10) break;
@@ -236,13 +253,21 @@
             });
         },
         
-        clone: function(path, repo) {
+        /**
+         * Clone repo or show dialog to clone repo
+         * 
+         * @param {string} path
+         * @param {string} repo
+         * @param {boolean} init_submodules
+         */
+        clone: function(path, repo, init_submodules) {
             var _this = this;
+            init_submodules = init_submodules || "false";
             if (typeof(repo) == 'undefined') {
                 this.showDialog('clone', path);
             } else {
                 codiad.modal.unload();
-                $.getJSON(_this.path + 'controller.php?action=clone&path=' + path + '&repo=' + repo, function(result){
+                $.getJSON(_this.path + 'controller.php?action=clone&path=' + path + '&repo=' + repo + '&init_submodules=' + init_submodules, function(result){
                     if (result.status == 'login_required') {
                         codiad.message.error(result.message);
                         _this.showDialog('login', _this.location);
@@ -250,7 +275,7 @@
                             var username = $('.git_login_area #username').val();
                             var password = $('.git_login_area #password').val();
                             codiad.modal.unload();
-                            $.post(_this.path + 'controller.php?action=clone&path='+path+'&repo=' + repo, {username: username, password: password},
+                            $.post(_this.path + 'controller.php?action=clone&path='+path+'&repo=' + repo + '&init_submodules=' + init_submodules, {username: username, password: password},
                                 function(result){
                                     result = JSON.parse(result);
                                     codiad.message[result.status](result.message);
@@ -704,6 +729,111 @@
                         }
                     });
                 });
+        },
+        
+        submoduleDialog: function(repo, path) {
+            this.location = repo;
+            if (repo === path) {
+                path = "";
+            } else {
+                path = path.replace(repo + "/", "");
+            }
+            this.files      = [];
+            this.files.push(path);
+            this.showDialog('submodule');
+        },
+        
+        submodule: function(repo, dir, submodule) {
+            var _this = this;
+            repo = repo || this.location;
+            path = dir;
+            if (this.files[0] != "") {
+            	path = this.files[0] + "/" + dir;
+            }
+            _this.showDialog('overview', repo);
+            $.getJSON(this.path + 'controller.php?action=submodule&repo='+repo+'&path='+path+'&submodule='+submodule, function(result){
+                if (result.status == 'login_required') {
+                    codiad.message.error(result.message);
+                    _this.showDialog('login', _this.location);
+                    _this.login = function(){
+                        var username = $('.git_login_area #username').val();
+                        var password = $('.git_login_area #password').val();
+                        _this.showDialog('overview', _this.location);
+                        $.post(_this.path + 'controller.php?action=submodule&repo='+repo+'&path='+path+'&submodule='+submodule,
+                            {username: username, password: password}, function(result){
+                                result = JSON.parse(result);
+                                codiad.message[result.status](result.message);
+                                if (result.status == 'success') {
+                                    codiad.filemanager.rescan(repo);
+                                }
+                            });
+                    };
+                } else if (result.status == 'passphrase_required') {
+                    codiad.message.error(result.message);
+                    _this.showDialog('passphrase', _this.location);
+                    _this.login = function() {
+                        var passphrase = $('.git_login_area #passphrase').val();
+                        _this.showDialog('overview', _this.location);
+                        $.post(_this.path + 'controller.php?action=submodule&repo='+repo+'&path='+path+'&submodule='+submodule,
+                            {passphrase: passphrase}, function(result){
+                                result = JSON.parse(result);
+                                codiad.message[result.status](result.message);
+                                if (result.status == 'success') {
+                                    codiad.filemanager.rescan(repo);
+                                }
+                            });
+                    };
+                } else {
+                    codiad.message[result.status](result.message);
+                    if (result.status == 'success') {
+                        codiad.filemanager.rescan(repo);
+                    }
+                }
+            });
+        },
+        
+        initSubmodule: function(path) {
+            var _this = this;
+            path = path || this.location;
+            $.getJSON(this.path + 'controller.php?action=initSubmodule&path='+path, function(result){
+                if (result.status == 'login_required') {
+                    codiad.message.error(result.message);
+                    _this.showDialog('login', _this.location);
+                    _this.login = function(){
+                        var username = $('.git_login_area #username').val();
+                        var password = $('.git_login_area #password').val();
+                        _this.showDialog('overview', _this.location);
+                        $.post(_this.path + 'controller.php?action=initSubmodule&path='+path,
+                            {username: username, password: password}, function(result){
+                                result = JSON.parse(result);
+                                codiad.message[result.status](result.message);
+                                if (result.status == 'success') {
+                                    codiad.filemanager.rescan(path);
+                                }
+                            });
+                    };
+                } else if (result.status == 'passphrase_required') {
+                    codiad.message.error(result.message);
+                    _this.showDialog('passphrase', _this.location);
+                    _this.login = function() {
+                        var passphrase = $('.git_login_area #passphrase').val();
+                        _this.showDialog('overview', _this.location);
+                        $.post(_this.path + 'controller.php?action=initSubmodule&path='+path,
+                            {passphrase: passphrase}, function(result){
+                                result = JSON.parse(result);
+                                codiad.message[result.status](result.message);
+                                if (result.status == 'success') {
+                                    codiad.filemanager.rescan(path);
+                                }
+                            });
+                    };
+                } else {
+                    codiad.message[result.status](result.message);
+                    if (result.status == 'success') {
+                        codiad.filemanager.rescan(path);
+                    }
+                }
+            })
         },
         
         numstat: function(path) {

@@ -45,8 +45,8 @@
             break;
             
         case 'clone':
-            if (isset($_GET['path']) && isset($_GET['repo'])) {
-                echo $git->cloneRepo(getWorkspacePath($_GET['path']), $_GET['repo']);
+            if (isset($_GET['path']) && isset($_GET['repo']) && isset($_GET['init_submodules'])) {
+                echo $git->cloneRepo(getWorkspacePath($_GET['path']), $_GET['repo'], $_GET['init_submodules']);
             } else {
                 echo '{"status":"error","message":"Missing parameter!"}';
             }
@@ -313,6 +313,22 @@
         case 'rename':
             if (isset($_GET['path']) && isset($_GET['old_name']) && isset($_GET['new_name'])) {
                 echo $git->renameItem(getWorkspacePath($_GET['path']), $_GET['old_name'], $_GET['new_name']);
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
+        case 'submodule':
+            if (isset($_GET['repo']) && isset($_GET['path']) && isset($_GET['submodule'])) {
+                echo $git->submodule(getWorkspacePath($_GET['repo']), $_GET['path'], $_GET['submodule']);
+            } else {
+                echo '{"status":"error","message":"Missing parameter!"}';
+            }
+            break;
+            
+        case 'initSubmodule':
+            if (isset($_GET['path'])) {
+                echo $git->initSubmodule(getWorkspacePath($_GET['path']));
             } else {
                 echo '{"status":"error","message":"Missing parameter!"}';
             }
