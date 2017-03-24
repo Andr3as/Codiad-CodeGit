@@ -643,6 +643,28 @@
                     $this->lineRanges[$line]['start_id'] = $parent_id;
                 }
             }
+            //Extend ranges with first child
+            function searchForChild($parent_hash, $array) {
+                foreach ($array as $key => $val) {
+                    foreach ($val['parents'] as $parent) {
+                        if ($parent === $parent_hash) {
+                            return $key;
+                        }
+                    }
+                }
+                return null;
+            }
+            
+            foreach($this->lineRanges as $line => $range) {
+                $end_id = $range['end_id'];
+                $commit = $this->commits[$end_id];
+                $child_id = searchForChild($commit['hash'], $this->commits);
+                if ($child_id !== null) {
+                    $child = $this->commits[$child_id];
+                    $this->lineRanges[$line]['end'] = $child['time'];
+                    $this->lineRanges[$line]['end_id'] = $child_id;
+                }
+            }
             
             //Sort ranges
             function sort_ranges_by_start($a, $b) {
@@ -650,11 +672,12 @@
             }
             uasort($this->lineRanges, 'sort_ranges_by_start');
             
+            //Calculate levels
             $levels = array();
             foreach($this->lineRanges as $line => $range) {
                 $merged = false;
                 foreach($levels as $index => $level) {
-                    if ($level['end'] < $range['start']) {
+                    if ($level['end'] <= $range['start']) {
                         array_push($levels[$index]['lines'], $line);
                         $levels[$index]['end'] = $range['end'];
                         $merged = true;
