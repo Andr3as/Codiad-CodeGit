@@ -705,7 +705,7 @@
             }
             
             //Return
-            return array('commits' => $this->commits, 'heads' => $heads, 'tags' => $tags, 'branch' => $branch, 'hash_to_id' => $this->hash_to_id, 'lines' => ++$this->n_lines);
+            return array('commits' => $this->commits, 'heads' => $heads, 'tags' => $tags, 'branch' => $branch, 'hash_to_id' => $this->hash_to_id, 'lines' => ++$this->n_lines, 'levels' => count($levels));
         }
         
         private function walkLines($hash, $line, $new_line) {

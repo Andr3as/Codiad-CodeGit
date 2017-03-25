@@ -17,12 +17,13 @@ codiad.CodeGit.network_graph = {
     hash_to_id: [],
     heads: [],
     lines: 0,
+    levels: 0,
     tags: [],
     
     colors: [],
-    offsetSubject: 300,
-    offsetDot: (300 - 20),
-    offsetX: 150,
+    offsetSubject: -1,
+    offsetDot: -1,
+    offsetX: 100,
     offsetY: 20,
     unitTime: 20,
     unitSpace: 20,
@@ -139,6 +140,10 @@ codiad.CodeGit.network_graph = {
         ch = Math.max(gh, this.offsetY + this.unitTime * this.commits.length);
         cw = Math.max(gw, this.offsetX + this.unitSpace + 600);
         this.paper = Raphael(this.element, cw, ch);
+        // Calculate offsets
+        this.offsetDot = this.offsetX + this.levels * this.unitSpace;
+        this.offsetSubject = this.offsetDot + 20;
+        
     },
     
     collectColors: function() {
@@ -157,6 +162,7 @@ codiad.CodeGit.network_graph = {
         this.commits = data.commits;
         this.heads = data.heads;
         this.lines = data.lines;
+        this.levels = data.levels;
         this.tags = data.tags;
         this.hash_to_id = data.hash_to_id;
     }
