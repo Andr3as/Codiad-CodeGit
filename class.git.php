@@ -813,13 +813,17 @@
                 $email = $settings['local_email'];
             }
             
-            $result = $this->executeCommand('git config user.name "' . $username . '"');
-            if ($result !== 0) {
-                return false;
+            if (!empty($username)) {
+                $result = $this->executeCommand('git config user.name "' . $username . '"');
+                if ($result !== 0) {
+                    return false;
+                }
             }
-            $result = $this->executeCommand('git config user.email ' . $email );
-            if ($result !== 0) {
-                return false;
+            if (!empty($email)) {
+                $result = $this->executeCommand('git config user.email ' . $email );
+                if ($result !== 0) {
+                    return false;
+                }
             }
             return true;
         }
