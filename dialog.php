@@ -1,3 +1,6 @@
+<?php
+    require_once('../../common.php');
+?>
 <!--
     Copyright (c) Codiad & Andr3as, distributed
     as-is and without warranty under the MIT License. 
@@ -59,7 +62,7 @@
                 include('templates/remote.html');
                 break;
             case 'settings':
-                include('templates/settings.php');
+                include('templates/settings.html');
                 break;
             case 'showCommit':
                 include('templates/showCommit.html');
