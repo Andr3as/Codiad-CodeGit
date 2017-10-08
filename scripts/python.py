@@ -10,7 +10,7 @@
 # This information must remain intact.
 
 #http://www.tutorialspoint.com/python/python_command_line_arguments.htm
-import os, sys, argparse, pexpect
+import os, sys, argparse, pexpect, pexpect.popen_spawn
 
 #Parse arguments
 parser = argparse.ArgumentParser(description='Handler for git requests with authentification.')
@@ -58,7 +58,7 @@ os.chdir(arguments.path)
 
 #Execute command
 timeout = 180
-child = pexpect.spawn(arguments.command, timeout=timeout)
+child = pexpect.popen_spawn.PopenSpawn(arguments.command, timeout=timeout)
 
 index = child.expect(['Username for', 'Enter passphrase for key', 'assword', 'fatal', 'error',
                     pexpect.EOF, pexpect.TIMEOUT])

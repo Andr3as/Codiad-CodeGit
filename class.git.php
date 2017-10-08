@@ -837,16 +837,23 @@
         }
         
         private function checkShellProgramExists() {
+            $test = 'which';
+            
+            if (stripos(PHP_OS,'win') !== false) {
+                // Windows
+                $test = 'where';
+            }
+            
             if (shellProgram == "expect") {
-                if (`which expect`) {
+                if (`$test expect`) {
                     return true;
                 }
             } else if (shellProgram == "empty") {
-                if (`which empty`) {
+                if (`$test empty`) {
                     return true;
                 }
             } else if (shellProgram == "python") {
-                if (`which python`) {
+                if (`$test python`) {
                     exec('python ./scripts/python.py --test',$output,$return_var);
                     if ($return_var === 0) {
                         return true;
