@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 #Author: Andr3as
-#Last Edit: 11.09.14
+#Last Edit: 03/25/2017
 #Purpose: Handler for a git requests with authentification
 
 # Copyright (c) Codiad & Andr3as, distributed
@@ -18,27 +18,27 @@ user=0
 #Handle inputs
 while [ "$1" != "" ]
   do
-    if [ "$1" == "-u" ]
+    if [ "$1" = "-u" ]
       then
         user=$2
         shift
         shift
-      elif [ "$1" == "-p" ]
+      elif [ "$1" = "-p" ]
         then
           password=$2
           shift
           shift
-      elif [ "$1" == "-k" ]
+      elif [ "$1" = "-k" ]
         then
           passphrase=$2
           shift
           shift
-      elif [ "$1" == "-c" ]
+      elif [ "$1" = "-c" ]
         then
           command=$2
           shift
           shift
-      elif [ "$1" == "-s" ]
+      elif [ "$1" = "-s" ]
         then
           path=$2
           shift
@@ -50,13 +50,13 @@ while [ "$1" != "" ]
     fi
 done
 
-if [ "$command" == "" ]
+if [ "$command" = "" ]
   then
     echo "No command specified"
     exit 64
 fi
 
-if [ "$path" == "" ]
+if [ "$path" = "" ]
   then
     echo "No path specified"
     exit 64
